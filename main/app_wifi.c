@@ -17,12 +17,18 @@
 #define WIFI_CONNECTED_BIT BIT0
 #define WIFI_FAIL_BIT      BIT1
 
-#define WIFI_SSID           "myssid"
-#define WIFI_PASSWORD       "mypassowrd"
+#define WIFI_SSID           "hkim-rnd"
+#define WIFI_PASSWORD       "hkrnd1234"
 
 static const char* TAG = "app_wifi";
 static EventGroupHandle_t s_wifi_event_group;
 
+static volatile bool _initialized = false;
+
+//
+// XXX
+// this event_handler is executed in another task context!
+//
 static void
 event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data)
 {
@@ -45,8 +51,8 @@ event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* ev
   }
 }
 
-void
-app_wifi_init(void)
+static void
+app_wifi_task(void* pvParameters)
 {
   s_wifi_event_group = xEventGroupCreate();
 
@@ -92,11 +98,13 @@ app_wifi_init(void)
   ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config) );
   ESP_ERROR_CHECK(esp_wifi_start() );
 
+  _initialized = true;
+
   while(1)
   {
     EventBits_t bits = xEventGroupWaitBits(s_wifi_event_group,
         WIFI_CONNECTED_BIT | WIFI_FAIL_BIT,
-        pdFALSE,
+        pdTRUE,
         pdFALSE,
         portMAX_DELAY);
 
@@ -104,7 +112,7 @@ app_wifi_init(void)
      * happened. */
     if (bits & WIFI_CONNECTED_BIT)
     {
-      ESP_LOGI(TAG, "connected to ap SSID:%s password:%s", WIFI_SSID, WIFI_PASSWORD);
+      ESP_LOGI(TAG, "Connected to ap SSID:%s password:%s", WIFI_SSID, WIFI_PASSWORD);
     }
     else if (bits & WIFI_FAIL_BIT)
     {
@@ -115,4 +123,18 @@ app_wifi_init(void)
       ESP_LOGE(TAG, "UNEXPECTED EVENT");
     }
   }
+}
+
+void
+app_wifi_init(void)
+{
+  ESP_LOGI(TAG, "app_wifi_init()");
+
+  xTaskCreate(app_wifi_task, "wifi_task", 4096, NULL, 5, NULL);
+}
+
+bool
+app_wifi_initialized(void)
+{
+  return _initialized;
 }

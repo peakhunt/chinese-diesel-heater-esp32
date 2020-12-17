@@ -7,6 +7,7 @@
 #include "nvs_flash.h"
 
 #include "app_wifi.h"
+#include "app_heater.h"
 
 #ifdef CONFIG_IDF_TARGET_ESP32
 #define CHIP_NAME "ESP32"
@@ -43,7 +44,13 @@ void app_main(void)
   printf("%dMB %s flash\n", spi_flash_get_chip_size() / (1024 * 1024),
       (chip_info.features & CHIP_FEATURE_EMB_FLASH) ? "embedded" : "external");
 
+  app_heater_init();
   app_wifi_init();
+
+  while(1)
+  {
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
+  }
 #if 0
   for(int i = 10; i >= 0; i--)
   {

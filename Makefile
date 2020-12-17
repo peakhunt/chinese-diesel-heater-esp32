@@ -6,4 +6,3 @@
 PROJECT_NAME := diesel-heater
 
 include $(IDF_PATH)/make/project.mk
-
