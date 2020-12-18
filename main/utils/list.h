@@ -32,8 +32,14 @@
 
 #define LIST_HEAD_INIT(name) { &(name), &(name) }
 
+#if 0
+   due to conflict with esp32 IDK
 #define LIST_HEAD(name) \
 	struct list_head name = LIST_HEAD_INIT(name)
+#else
+#define LIST_HEAD_DECL(name) \
+	struct list_head name = LIST_HEAD_INIT(name)
+#endif
 
 struct list_head
 {

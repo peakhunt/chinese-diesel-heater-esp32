@@ -21,9 +21,6 @@
 #define WIFI_PASSWORD       "hkrnd1234"
 
 static const char* TAG = "app_wifi";
-static EventGroupHandle_t s_wifi_event_group;
-
-static volatile bool _initialized = false;
 
 //
 // XXX
@@ -38,7 +35,6 @@ event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* ev
   }
   else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED)
   {
-    xEventGroupSetBits(s_wifi_event_group, WIFI_FAIL_BIT);
     esp_wifi_connect();
     ESP_LOGI(TAG,"connect to the AP fail");
   }
@@ -47,17 +43,12 @@ event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* ev
     ip_event_got_ip_t* event = (ip_event_got_ip_t*) event_data;
 
     ESP_LOGI(TAG, "got ip:" IPSTR, IP2STR(&event->ip_info.ip));
-    xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
   }
 }
 
-static void
-app_wifi_task(void* pvParameters)
+void
+app_wifi_init(void)
 {
-  s_wifi_event_group = xEventGroupCreate();
-
-  ESP_ERROR_CHECK(esp_netif_init());
-  ESP_ERROR_CHECK(esp_event_loop_create_default());
   esp_netif_create_default_wifi_sta();
 
   wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
@@ -97,44 +88,4 @@ app_wifi_task(void* pvParameters)
   ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA) );
   ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config) );
   ESP_ERROR_CHECK(esp_wifi_start() );
-
-  _initialized = true;
-
-  while(1)
-  {
-    EventBits_t bits = xEventGroupWaitBits(s_wifi_event_group,
-        WIFI_CONNECTED_BIT | WIFI_FAIL_BIT,
-        pdTRUE,
-        pdFALSE,
-        portMAX_DELAY);
-
-    /* xEventGroupWaitBits() returns the bits before the call returned, hence we can test which event actually
-     * happened. */
-    if (bits & WIFI_CONNECTED_BIT)
-    {
-      ESP_LOGI(TAG, "Connected to ap SSID:%s password:%s", WIFI_SSID, WIFI_PASSWORD);
-    }
-    else if (bits & WIFI_FAIL_BIT)
-    {
-      ESP_LOGI(TAG, "Failed to connect to SSID:%s, password:%s", WIFI_SSID, WIFI_PASSWORD);
-    }
-    else
-    {
-      ESP_LOGE(TAG, "UNEXPECTED EVENT");
-    }
-  }
-}
-
-void
-app_wifi_init(void)
-{
-  ESP_LOGI(TAG, "app_wifi_init()");
-
-  xTaskCreate(app_wifi_task, "wifi_task", 4096, NULL, 5, NULL);
-}
-
-bool
-app_wifi_initialized(void)
-{
-  return _initialized;
 }

@@ -797,11 +797,6 @@ shell_task(void* pvParameters)
 {
   ESP_LOGI(TAG, "starting shell task");
 
-  while(app_wifi_initialized() == false)
-  {
-    vTaskDelay(100 / portTICK_PERIOD_MS);
-  }
-
   io_driver_init(&_io_driver);
 
   cli_init(_app_commands, sizeof(_app_commands)/sizeof(cli_command_t), 7000);

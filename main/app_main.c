@@ -2,11 +2,14 @@
 #include "sdkconfig.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "esp_event.h"
 #include "esp_system.h"
 #include "esp_spi_flash.h"
 #include "nvs_flash.h"
+#include "esp_netif.h"
 
 #include "app_wifi.h"
+#include "app_webserver.h"
 #include "app_heater.h"
 
 #ifdef CONFIG_IDF_TARGET_ESP32
@@ -28,6 +31,8 @@ void app_main(void)
     ret = nvs_flash_init();
   }
   ESP_ERROR_CHECK(ret);
+  ESP_ERROR_CHECK(esp_netif_init());
+  ESP_ERROR_CHECK(esp_event_loop_create_default());
 
   /* Print chip information */
   esp_chip_info_t chip_info;
@@ -46,21 +51,5 @@ void app_main(void)
 
   app_heater_init();
   app_wifi_init();
-
-  while(1)
-  {
-    vTaskDelay(1000 / portTICK_PERIOD_MS);
-  }
-#if 0
-  for(int i = 10; i >= 0; i--)
-  {
-    printf("Restarting in %d seconds...\n", i);
-    vTaskDelay(1000 / portTICK_PERIOD_MS);
-  }
-
-  printf("Restarting now.\n");
-  fflush(stdout);
-
-  esp_restart();
-#endif
+  app_webserver_init();
 }

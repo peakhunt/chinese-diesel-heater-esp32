@@ -34,7 +34,7 @@ static void cli_command_cli_connections(cli_intf_t* intf, int argc, const char**
 // private variables
 //
 ////////////////////////////////////////////////////////////////////////////////
-static LIST_HEAD(_cli_intf_list);
+static LIST_HEAD_DECL(_cli_intf_list);
 
 static cli_command_t    _core_commands[] =
 {
