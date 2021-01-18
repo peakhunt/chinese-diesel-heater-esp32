@@ -17,6 +17,11 @@
 #define WIFI_CONNECTED_BIT BIT0
 #define WIFI_FAIL_BIT      BIT1
 
+#define WIFI_AP_SSID        "heater"
+#define WIFI_AP_PASS        "chinesedieselheater"
+#define WIFI_AP_CHANNEL     6
+#define WIFI_AP_MAX_CONN    2
+
 #define WIFI_SSID           "hkim-rnd"
 #define WIFI_PASSWORD       "hkrnd1234"
 
@@ -46,10 +51,11 @@ event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* ev
   }
 }
 
-void
-app_wifi_init(void)
+static void
+app_wifi_init_ap_sta(void)
 {
   esp_netif_create_default_wifi_sta();
+  esp_netif_create_default_wifi_ap();
 
   wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
   ESP_ERROR_CHECK(esp_wifi_init(&cfg));
@@ -68,15 +74,12 @@ app_wifi_init(void)
         NULL,
         &instance_got_ip));
 
-  wifi_config_t wifi_config =
+  static wifi_config_t sta_wifi_config =
   {
     .sta =
     {
       .ssid     = WIFI_SSID,
       .password = WIFI_PASSWORD,
-      /* Setting a password implies station will connect to all security modes including WEP/WPA.
-       * However these modes are deprecated and not advisable to be used. Incase your Access point
-       * doesn't support WPA2, these mode can be enabled by commenting below line */
       .threshold.authmode = WIFI_AUTH_WPA2_PSK,
 
       .pmf_cfg = {
@@ -85,7 +88,32 @@ app_wifi_init(void)
       },
     },
   };
-  ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA) );
-  ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config) );
+
+  static wifi_config_t ap_wifi_config =
+  {
+    .ap = {
+      .ssid = WIFI_AP_SSID,
+      .ssid_len = strlen(WIFI_AP_SSID),
+      .channel = WIFI_AP_CHANNEL,
+      .password = WIFI_AP_PASS,
+      .max_connection = WIFI_AP_MAX_CONN,
+      .authmode = WIFI_AUTH_WPA_WPA2_PSK,
+      .beacon_interval = 100,
+    },
+  };
+
+  if (strlen(WIFI_AP_PASS) == 0) {
+    ap_wifi_config.ap.authmode = WIFI_AUTH_OPEN;
+  }
+
+  ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_APSTA));
+  ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &sta_wifi_config) );
+  ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_AP, &ap_wifi_config) );
   ESP_ERROR_CHECK(esp_wifi_start() );
+}
+
+void
+app_wifi_init(void)
+{
+  app_wifi_init_ap_sta();
 }
