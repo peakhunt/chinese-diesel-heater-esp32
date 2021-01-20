@@ -4,10 +4,9 @@
   :width="width"
   :height="height"
   viewBox="0 0 88 94.963837"
-  role="presentation"
-  @click="startPump">
+  role="presentation">
 
-  <g :fill="iconColor" transform="rotate(-90 44 47.4819185)">
+  <g :fill="pumpColor" transform="rotate(-90 44 47.4819185)">
     <path
      d="M 15.8,5.7 C 15.5,9.5 14,14.2 11.7,19.2 L 8.1,27 h -4 C 0.4,27 0,27.2 0,29.5 0,31.9 0.3,32 5.8,32 h 5.8 L 16.3,21.1 C 19.9,12.8 21,8.9 21,5.1 21,0.4 20.8,0 18.6,0 16.4,0 16.2,0.5 15.8,5.7 Z"/>
     <path
@@ -34,9 +33,30 @@
         type: [Number, String],
         default: 18
       },
+      onColor: {
+        type: String,
+        default: 'blue'
+      },
+      offColor: {
+        type: String,
+        default: 'black'
+      },
+      running: {
+        type: Boolean,
+        default: false
+      },
       iconColor: {
         type: String,
         default: 'currentColor'
+      }
+    },
+    computed: {
+      pumpColor: function() {
+        if (this.running) {
+          return this.onColor
+        } else {
+          return this.offColor
+        }
       }
     },
     mounted: function () {
@@ -44,7 +64,7 @@
         x: -7,
         repeat: -1,
         ease: 'none',
-        paused: true,
+        paused: !this.running,
         yoyo: true,
       });
     },
@@ -60,5 +80,14 @@
     data: () => ({
       pumpAnim: null,
     }),
+    watch: {
+      running: function(newVal) {
+        if (newVal) {
+          this.pumpAnim.play()
+        } else {
+          this.pumpAnim.pause(0)
+        }
+      }
+    }
   }
 </script>

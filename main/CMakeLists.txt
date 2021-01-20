@@ -32,7 +32,7 @@ idf_component_register(SRCS "app_main.c"
                                  "heater"
                                  "utils")
 
-set(WEB_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../front")
+set(WEB_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../web-front")
 if(EXISTS ${WEB_SRC_DIR}/dist)
   spiffs_create_partition_image(www ${WEB_SRC_DIR}/dist FLASH_IN_PROJECT)
 else()

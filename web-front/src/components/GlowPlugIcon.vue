@@ -5,7 +5,6 @@
   :width="width"
   :height="height"
   role="presentation"
-  @click="startGlow"
 >
   <g ref="glowIcon">
     <g transform="rotate(-225 256 256)">
@@ -37,6 +36,10 @@
         type: String,
         default: 'red'
       },
+      running: {
+        type: Boolean,
+        default: false
+      },
     },
     mounted: function () {
       this.glowAnim = TweenMax.fromTo(this.$refs.glowIcon,
@@ -44,22 +47,24 @@
         { fill: this.onColor,
           duration: 0.3,
           repeat: -1,
-          paused: true,
+          paused: !this.running,
           yoyo: true,
         }
       )
     },
     methods: {
-      startGlow() {
-        if (this.glowAnim.paused() == false) {
-          this.glowAnim.pause(0)
-        } else {
-          this.glowAnim.play()
-        }
-      },
     },
     data: () => ({
       glowAnim: null,
     }),
+    watch: {
+      running: function(newVal) {
+        if (newVal) {
+          this.glowAnim.play()
+        } else {
+          this.glowAnim.pause(0)
+        }
+      }
+    }
   }
 </script>

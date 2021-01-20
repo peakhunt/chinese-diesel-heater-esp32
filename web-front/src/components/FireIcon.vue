@@ -1,9 +1,13 @@
+<!--
+
+this is a copy & paste from a brillian source I found in the internet!!!
+
+-->
 <template>
 <svg
   :width="width"
   :height="height"
   role="presentation"
-  @click="startFire"
   viewBox="0 -20 120 240">
   <defs>
     <linearGradient id="fire-gradient-basic" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -48,6 +52,10 @@
         type: [Number, String],
         default: 18
       },
+      running: {
+        type: Boolean,
+        default: false,
+      },
     },
     mounted: function () {
       const fire = this.$refs.fire
@@ -91,15 +99,12 @@
         });
         this.fireTls.push(tl);
       });
+
+      if(this.running) {
+        this.playFire()
+      }
     },
     methods: {
-      startFire() {
-        if (this.animating == false) {
-          this.playFire()
-        } else {
-          this.pauseFire()
-        }
-      },
       playFire() {
         this.fireTls.forEach((tl) => {
           tl.play();
@@ -114,9 +119,17 @@
       },
     },
     data: () => ({
-      skewAnim: null,
       animating: false,
 			fireTls: [],
     }),
+    watch: {
+      running: function(newVal) {
+        if (newVal) {
+          this.playFire()
+        } else {
+          this.pauseFire()
+        }
+      }
+    }
   }
 </script>
