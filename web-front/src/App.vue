@@ -6,30 +6,42 @@
       dark
     >
       <div class="d-flex align-center">
-        Diesel Heater
+        Chinese Diesel Heater
       </div>
 
       <v-spacer></v-spacer>
+
+      <v-btn class="mx-2" dark large :color="commStatus ? 'green' : 'red'">
+        Comm {{ commStatus ? 'OK' : 'Fail' }}
+      </v-btn>
     </v-app-bar>
 
     <v-main>
-      <HelloWorld/>
+      <Heater/>
     </v-main>
   </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld';
+import Heater from './components/Heater';
+import { mapGetters } from 'vuex'
 
 export default {
+
   name: 'App',
-
   components: {
-    HelloWorld,
+    Heater,
   },
-
   data: () => ({
-    //
   }),
+  computed: {
+    ...mapGetters([
+      'commStatus',
+    ]),
+  }
 };
 </script>
+
+<style lang="sass">
+  @import '../node_modules/typeface-roboto/index.css'
+</style>

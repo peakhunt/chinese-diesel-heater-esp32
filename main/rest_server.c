@@ -8,11 +8,14 @@
 */
 #include <string.h>
 #include <fcntl.h>
+#include <math.h>
 #include "esp_http_server.h"
 #include "esp_system.h"
 #include "esp_log.h"
 #include "esp_vfs.h"
 #include "cJSON.h"
+
+#include "app_heater.h"
 
 static const char *REST_TAG = "esp-rest";
 #define REST_CHECK(a, str, goto_tag, ...)                                              \
@@ -167,6 +170,256 @@ static esp_err_t temperature_data_get_handler(httpd_req_t *req)
     return ESP_OK;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+//
+// for Heater REST interface
+//
+////////////////////////////////////////////////////////////////////////////////
+/* Simple handler for getting heater status */
+static const char*
+heater_get_common_json_status(void)
+{
+	static app_heater_status_rsp_t    r;
+
+	app_heater_status(&r);
+
+  cJSON *root = cJSON_CreateObject();
+
+  cJSON_AddNumberToObject(root, "state", r.state);
+  cJSON_AddNumberToObject(root, "fanPower", r.fan_pwr);
+  cJSON_AddBoolToObject(root, "fanRunning", r.fan_on);
+  cJSON_AddBoolToObject(root, "flameDetected", r.flame_detected);
+  cJSON_AddBoolToObject(root, "glowPlugOn", r.glow_on);
+  cJSON_AddNumberToObject(root, "outletTemp", r.outlet_temp);
+  cJSON_AddNumberToObject(root, "pumpFreq", r.oil_freq);
+  cJSON_AddBoolToObject(root, "pumpRunning", r.oil_on);
+
+  const char *status = cJSON_Print(root);
+
+  cJSON_Delete(root);
+
+  return status;
+}
+
+//
+// heater status get
+//
+static
+esp_err_t heater_status_get_handler(httpd_req_t *req)
+{
+  httpd_resp_set_type(req, "application/json");
+
+  const char *status = heater_get_common_json_status(); 
+  httpd_resp_sendstr(req, status);
+  free((void *)status);
+
+  return ESP_OK;
+}
+
+static esp_err_t
+heater_fan_start_post_handler(httpd_req_t *req)
+{
+  //
+  // XXX
+  // httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to read existing file");
+  // httpd_resp_sendstr(req, "Post control value successfully");
+  //
+  app_heater_control_fan(true);
+
+  httpd_resp_set_type(req, "application/json");
+
+  const char *status = heater_get_common_json_status(); 
+  httpd_resp_sendstr(req, status);
+  free((void *)status);
+
+  return ESP_OK;
+}
+
+static esp_err_t
+heater_fan_stop_post_handler(httpd_req_t *req)
+{
+  app_heater_control_fan(false);
+
+  httpd_resp_set_type(req, "application/json");
+
+  const char *status = heater_get_common_json_status(); 
+  httpd_resp_sendstr(req, status);
+  free((void *)status);
+
+  return ESP_OK;
+}
+
+static esp_err_t
+heater_fan_power_post_handler(httpd_req_t *req)
+{
+  int total_len = req->content_len;
+  int cur_len = 0;
+  char *buf = ((rest_server_context_t *)(req->user_ctx))->scratch;
+  int received = 0;
+
+  if (total_len >= SCRATCH_BUFSIZE) {
+    /* Respond with 500 Internal Server Error */
+    httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "content too long");
+    return ESP_FAIL;
+  }
+
+  while (cur_len < total_len) {
+    received = httpd_req_recv(req, buf + cur_len, total_len);
+    if (received <= 0) {
+      /* Respond with 500 Internal Server Error */
+      httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to post control value");
+      return ESP_FAIL;
+    }
+    cur_len += received;
+  }
+  buf[total_len] = '\0';
+
+  cJSON *root = cJSON_Parse(buf);
+
+  int power = cJSON_GetObjectItem(root, "power")->valueint;
+  cJSON_Delete(root);
+
+  app_heater_control_fan_power(power);
+
+  httpd_resp_set_type(req, "application/json");
+
+  const char *status = heater_get_common_json_status(); 
+  httpd_resp_sendstr(req, status);
+  free((void *)status);
+
+  return ESP_OK;
+}
+
+static esp_err_t
+heater_pump_start_post_handler(httpd_req_t *req)
+{
+  app_heater_control_oil_pump(true);
+
+  httpd_resp_set_type(req, "application/json");
+
+  const char *status = heater_get_common_json_status(); 
+  httpd_resp_sendstr(req, status);
+  free((void *)status);
+
+  return ESP_OK;
+}
+
+static esp_err_t
+heater_pump_stop_post_handler(httpd_req_t *req)
+{
+  app_heater_control_oil_pump(false);
+
+  httpd_resp_set_type(req, "application/json");
+
+  const char *status = heater_get_common_json_status(); 
+  httpd_resp_sendstr(req, status);
+  free((void *)status);
+
+  return ESP_OK;
+}
+
+static esp_err_t
+heater_pump_freq_post_handler(httpd_req_t *req)
+{
+  int total_len = req->content_len;
+  int cur_len = 0;
+  char *buf = ((rest_server_context_t *)(req->user_ctx))->scratch;
+  int received = 0;
+
+  if (total_len >= SCRATCH_BUFSIZE) {
+    /* Respond with 500 Internal Server Error */
+    httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "content too long");
+    return ESP_FAIL;
+  }
+
+  while (cur_len < total_len) {
+    received = httpd_req_recv(req, buf + cur_len, total_len);
+    if (received <= 0) {
+      /* Respond with 500 Internal Server Error */
+      httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to post control value");
+      return ESP_FAIL;
+    }
+    cur_len += received;
+  }
+  buf[total_len] = '\0';
+
+  cJSON *root = cJSON_Parse(buf);
+
+  float freq = (float)cJSON_GetObjectItem(root, "freq")->valuedouble;
+  cJSON_Delete(root);
+
+  app_heater_control_oil_pump_freq(freq);
+
+  httpd_resp_set_type(req, "application/json");
+
+  const char *status = heater_get_common_json_status(); 
+  httpd_resp_sendstr(req, status);
+  free((void *)status);
+
+  return ESP_OK;
+}
+
+static esp_err_t
+heater_glow_plug_on_post_handler(httpd_req_t *req)
+{
+  app_heater_control_glow(true);
+
+  httpd_resp_set_type(req, "application/json");
+
+  const char *status = heater_get_common_json_status(); 
+  httpd_resp_sendstr(req, status);
+  free((void *)status);
+
+  return ESP_OK;
+}
+
+static esp_err_t
+heater_glow_plug_off_post_handler(httpd_req_t *req)
+{
+  app_heater_control_glow(false);
+
+  httpd_resp_set_type(req, "application/json");
+
+  const char *status = heater_get_common_json_status(); 
+  httpd_resp_sendstr(req, status);
+  free((void *)status);
+
+  return ESP_OK;
+}
+
+static esp_err_t
+heater_heater_start_post_handler(httpd_req_t *req)
+{
+  app_heater_start();
+
+  httpd_resp_set_type(req, "application/json");
+
+  const char *status = heater_get_common_json_status(); 
+  httpd_resp_sendstr(req, status);
+  free((void *)status);
+
+  return ESP_OK;
+}
+
+static esp_err_t
+heater_heater_stop_post_handler(httpd_req_t *req)
+{
+  app_heater_stop();
+
+  httpd_resp_set_type(req, "application/json");
+
+  const char *status = heater_get_common_json_status(); 
+  httpd_resp_sendstr(req, status);
+  free((void *)status);
+
+  return ESP_OK;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//
+// REST server main
+//
+////////////////////////////////////////////////////////////////////////////////
 esp_err_t start_rest_server(const char *base_path)
 {
     REST_CHECK(base_path, "wrong base path", err);
@@ -176,6 +429,7 @@ esp_err_t start_rest_server(const char *base_path)
 
     httpd_handle_t server = NULL;
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
+    config.max_uri_handlers = 24;
     config.uri_match_fn = httpd_uri_match_wildcard;
 
     ESP_LOGI(REST_TAG, "Starting HTTP Server");
@@ -208,6 +462,99 @@ esp_err_t start_rest_server(const char *base_path)
     };
     httpd_register_uri_handler(server, &light_brightness_post_uri);
 
+    /////////////////////////////////////////////////////////////////////
+    //
+    // Heater REST APIs
+    //
+    /////////////////////////////////////////////////////////////////////
+    httpd_uri_t heater_status_get_uri = {
+        .uri = "/api/v1/heater/status",
+        .method = HTTP_GET,
+        .handler = heater_status_get_handler,
+        .user_ctx = rest_context
+    };
+    httpd_register_uri_handler(server, &heater_status_get_uri);
+
+    httpd_uri_t heater_fan_start_post_uri = {
+        .uri = "/api/v1/heater/fan/start",
+        .method = HTTP_POST,
+        .handler = heater_fan_start_post_handler,
+        .user_ctx = rest_context
+    };
+    httpd_register_uri_handler(server, &heater_fan_start_post_uri);
+
+    httpd_uri_t heater_fan_stop_post_uri = {
+        .uri = "/api/v1/heater/fan/stop",
+        .method = HTTP_POST,
+        .handler = heater_fan_stop_post_handler,
+        .user_ctx = rest_context
+    };
+    httpd_register_uri_handler(server, &heater_fan_stop_post_uri);
+
+    httpd_uri_t heater_fan_power_post_uri = {
+        .uri = "/api/v1/heater/fan/power",
+        .method = HTTP_POST,
+        .handler = heater_fan_power_post_handler,
+        .user_ctx = rest_context
+    };
+    httpd_register_uri_handler(server, &heater_fan_power_post_uri);
+
+    httpd_uri_t heater_pump_start_post_uri = {
+        .uri = "/api/v1/heater/pump/start",
+        .method = HTTP_POST,
+        .handler = heater_pump_start_post_handler,
+        .user_ctx = rest_context
+    };
+    httpd_register_uri_handler(server, &heater_pump_start_post_uri);
+
+    httpd_uri_t heater_pump_stop_post_uri = {
+        .uri = "/api/v1/heater/pump/stop",
+        .method = HTTP_POST,
+        .handler = heater_pump_stop_post_handler,
+        .user_ctx = rest_context
+    };
+    httpd_register_uri_handler(server, &heater_pump_stop_post_uri);
+
+    httpd_uri_t heater_pump_freq_post_uri = {
+        .uri = "/api/v1/heater/pump/freq",
+        .method = HTTP_POST,
+        .handler = heater_pump_freq_post_handler,
+        .user_ctx = rest_context
+    };
+    httpd_register_uri_handler(server, &heater_pump_freq_post_uri);
+
+    httpd_uri_t heater_glow_plug_on_post_uri = {
+        .uri = "/api/v1/heater/glowplug/on",
+        .method = HTTP_POST,
+        .handler = heater_glow_plug_on_post_handler,
+        .user_ctx = rest_context
+    };
+    httpd_register_uri_handler(server, &heater_glow_plug_on_post_uri);
+
+    httpd_uri_t heater_glow_plug_off_post_uri = {
+        .uri = "/api/v1/heater/glowplug/off",
+        .method = HTTP_POST,
+        .handler = heater_glow_plug_off_post_handler,
+        .user_ctx = rest_context
+    };
+    httpd_register_uri_handler(server, &heater_glow_plug_off_post_uri);
+
+    httpd_uri_t heater_heater_start_post_uri = {
+        .uri = "/api/v1/heater/start",
+        .method = HTTP_POST,
+        .handler = heater_heater_start_post_handler,
+        .user_ctx = rest_context
+    };
+    httpd_register_uri_handler(server, &heater_heater_start_post_uri);
+
+    httpd_uri_t heater_heater_stop_post_uri = {
+        .uri = "/api/v1/heater/stop",
+        .method = HTTP_POST,
+        .handler = heater_heater_stop_post_handler,
+        .user_ctx = rest_context
+    };
+    httpd_register_uri_handler(server, &heater_heater_stop_post_uri);
+
     /* URI handler for getting web server files */
     httpd_uri_t common_get_uri = {
         .uri = "/*",
@@ -216,6 +563,7 @@ esp_err_t start_rest_server(const char *base_path)
         .user_ctx = rest_context
     };
     httpd_register_uri_handler(server, &common_get_uri);
+
 
     return ESP_OK;
 err_start:

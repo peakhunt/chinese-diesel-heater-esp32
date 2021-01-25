@@ -73,6 +73,7 @@ typedef struct
 typedef struct
 {
   heater_state_t        state;
+  bool                  flame_detected;
   bool                  oil_on;
   bool                  glow_on;
   bool                  fan_on;

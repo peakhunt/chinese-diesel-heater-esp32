@@ -180,6 +180,7 @@ app_heater_handle_cmd(app_heater_msg_t* m)
       r->fan_pwr            = heater->fan.pwr;
       r->step               = heater->step;
       r->outlet_temp        = heater->outlet_temp.temp;
+      r->flame_detected     = heater->state == heater_state_running ? true : false;     // FIXME
 
       xQueueSend(_rsp_q, (void*)&ret, portMAX_DELAY);
     }
