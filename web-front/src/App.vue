@@ -2,18 +2,22 @@
   <v-app>
     <v-app-bar
       app
+      dense
       color="primary"
       dark
     >
-      <div class="d-flex align-center">
+      <v-toolbar-title>
         Chinese Diesel Heater
-      </div>
+      </v-toolbar-title>
 
       <v-spacer></v-spacer>
 
-      <v-btn class="mx-2" dark large :color="commStatus ? 'green' : 'red'">
+      <v-chip
+       :color="commStatus ? 'success' : 'error'"
+       elevation="4"
+       >
         Comm {{ commStatus ? 'OK' : 'Fail' }}
-      </v-btn>
+      </v-chip>
     </v-app-bar>
 
     <v-main>

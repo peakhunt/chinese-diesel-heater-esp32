@@ -51,9 +51,9 @@
                :running="this.pumpRunning"
                @click="onPumpClick"/>
 
-              <svg x="110" y="70" width="130" height="40">
-                <line x1="0" y1="0" x2="130" y2="0" style="stroke:black; stroke-width: 76"/>  
-                <text x="5" y="30" style="font: bold 30px sans-serif;fill: red;">{{this.stateStr}}</text>
+              <svg x="110" y="70" width="215" height="40">
+                <line x1="0" y1="0" x2="215" y2="0" style="stroke:black; stroke-width: 76"/>  
+                <text x="5" y="25" style="font: bold 25px sans-serif;fill: red;">{{this.stateStr}}</text>
               </svg>
 
               <svg x="30" y="180" width="130" height="40">
