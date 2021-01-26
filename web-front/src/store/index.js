@@ -12,12 +12,15 @@ const stateStrings = [
   "cooling",
 ];
 
+const numMaxTrends = 300
+
 function commitHeaterStatus(context, data) {
   context.commit('CHANGE_FAN_RUNNING', data.fanRunning)
   context.commit('CHANGE_FAN_POWER', data.fanPower)
   context.commit('CHANGE_PUMP_RUNNING', data.pumpRunning)
   context.commit('CHANGE_PUMP_FREQ', data.pumpFreq)
-  context.commit('CHANGE_OUTLET_TEMP', data.outletTemp)
+  context.commit('PUSH_OUTLET_TEMPERATURE', data.outletTemp)
+  context.commit('PUSH_ROOM_TEMPERATURE', 0)   // FIXME
   context.commit('CHANGE_GLOW_PLUG_ON', data.glowPlugOn)
   context.commit('CHANGE_FLAME_DETECTED', data.flameDetected)
   context.commit('CHANGE_STATE', data.state)
@@ -34,6 +37,9 @@ export default new Vuex.Store({
     flameDetected: false,
     state: 0,
     commStatus: true,
+    outletTempTrends: [],
+    roomTemp: 0.0,
+    roomTempTrends: [],
   },
   mutations: {
     CHANGE_FAN_RUNNING(state, v) {
@@ -48,9 +54,6 @@ export default new Vuex.Store({
     CHANGE_PUMP_FREQ(state, v) {
       state.pumpFreq = v
     },
-    CHANGE_OUTLET_TEMP(state, v) {
-      state.outletTemp = v
-    },
     CHANGE_GLOW_PLUG_ON(state, v) {
       state.glowPlugOn = v
     },
@@ -62,7 +65,23 @@ export default new Vuex.Store({
     },
     CHANGE_COMM_STATUS(state, v) {
       state.commStatus = v
-    }
+    },
+    PUSH_OUTLET_TEMPERATURE(state, v) {
+      state.outletTemp = v
+      state.outletTempTrends.push(v)
+
+      if (state.outletTempTrends.length > numMaxTrends) {
+        state.outletTempTrends.shift()
+      }
+    },
+    PUSH_ROOM_TEMPERATURE(state, v) {
+      state.roomTemp = v
+      state.roomTempTrends.push(v)
+
+      if (state.roomTempTrends.length > numMaxTrends) {
+        state.roomTempTrends.shift()
+      }
+    },
   },
   getters: {
     fanRunning(state) {
@@ -80,6 +99,9 @@ export default new Vuex.Store({
     outletTemp(state) {
       return state.outletTemp
     },
+    roomTemp(state) {
+      return state.roomTemp
+    },
     glowPlugOn(state) {
       return state.glowPlugOn
     },
@@ -95,6 +117,12 @@ export default new Vuex.Store({
     commStatus(state) {
       return state.commStatus
     },
+    outletTempTrends(state) {
+      return state.outletTempTrends
+    },
+    roomTempTrends(state) {
+      return state.roomTempTrends
+    },
   },
   actions: {
     pollStatus(context) {
@@ -108,6 +136,16 @@ export default new Vuex.Store({
         commitHeaterStatus(context, response.data)
       })
       .catch(function () {
+        //
+        // test code
+        //
+        /*
+        const o = Math.ceil(Math.random() * 300 - 100)
+        const r = Math.ceil(Math.random() * 300 - 100)
+        context.commit('PUSH_OUTLET_TEMPERATURE', o)
+        context.commit('PUSH_ROOM_TEMPERATURE', r)
+        */
+
         context.commit('CHANGE_COMM_STATUS', false)
       })
     },

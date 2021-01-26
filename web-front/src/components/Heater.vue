@@ -2,7 +2,6 @@
   <v-container>
     <v-row class="text-center">
       <v-col
-       offset="2"
        cols="8"
        class="d-flex"
        style="flex-direction:column"
@@ -73,6 +72,68 @@
             </svg>
           </v-card-text>
         </v-card>
+      </v-col>
+
+      <v-col
+       cols="4"
+       class="d-flex"
+       style="flex-direction:column"
+      >
+        <v-row class="ma-0">
+          <v-card outlined tile elevation="10" class="ma-2 flex-grow-1">
+            <v-card-title>
+              <v-row aligh="start">
+                <div class="caption grey--text text-uppercase">
+                  Outlet Temperature
+                </div>
+                <div>
+                  <span class="display-2 font-weight-black" v-text="outletTemp.toFixed(1)" />
+                  <strong>°C</strong>
+                </div>
+              </v-row>
+            </v-card-title>
+
+            <v-sheet color="transparent">
+              <v-sparkline
+               :smooth="16"
+               :gradient="['#f72047', '#ffd200', '#1feaea']"
+               :line-width="1"
+               :value="outletTempTrends"
+               auto-draw
+               stroke-linecap="round"
+              >
+              </v-sparkline>
+            </v-sheet>
+          </v-card>
+        </v-row>
+
+        <v-row class="ma-0">
+          <v-card outlined tile elevation="10" class="ma-2 flex-grow-1">
+            <v-card-title>
+              <v-row aligh="start">
+                <div class="caption grey--text text-uppercase">
+                  Room Temperature
+                </div>
+                <div>
+                  <span class="display-2 font-weight-black" v-text="roomTemp.toFixed(1)" />
+                  <strong>°C</strong>
+                </div>
+              </v-row>
+            </v-card-title>
+
+            <v-sheet color="transparent">
+              <v-sparkline
+               :smooth="16"
+               :gradient="['#f72047', '#ffd200', '#1feaea']"
+               :line-width="1"
+               :value="roomTempTrends"
+               auto-draw
+               stroke-linecap="round"
+              >
+              </v-sparkline>
+            </v-sheet>
+          </v-card>
+        </v-row>
       </v-col>
     </v-row>
 
@@ -374,6 +435,9 @@
         'fanPower',
         'pumpFreq',
         'stateStr',
+        'outletTempTrends',
+        'roomTemp',
+        'roomTempTrends',
       ]),
     },
   }
