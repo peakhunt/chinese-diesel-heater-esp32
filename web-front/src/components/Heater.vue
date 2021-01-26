@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container fluid>
     <v-row class="text-center">
       <v-col
        cols="8"
@@ -57,7 +57,7 @@
 
               <svg x="30" y="180" width="130" height="40">
                 <line x1="0" y1="0" x2="130" y2="0" style="stroke:black; stroke-width: 76"/>  
-                <text x="5" y="30" style="font: bold 30px sans-serif;fill: red;">{{this.outletTemp.toFixed(1)}} °C</text>
+                <text x="5" y="30" style="font: bold 30px sans-serif;fill: red;">{{this.outletTemp.toFixed(1)}} {{tempUnit}}</text>
               </svg>
 
               <svg x="620" y="265" width="90" height="40">
@@ -88,7 +88,7 @@
                 </div>
                 <div>
                   <span class="display-2 font-weight-black" v-text="outletTemp.toFixed(1)" />
-                  <strong>°C</strong>
+                  <strong>{{tempUnit}}</strong>
                 </div>
               </v-row>
             </v-card-title>
@@ -116,7 +116,7 @@
                 </div>
                 <div>
                   <span class="display-2 font-weight-black" v-text="roomTemp.toFixed(1)" />
-                  <strong>°C</strong>
+                  <strong>{{tempUnit}}</strong>
                 </div>
               </v-row>
             </v-card-title>
@@ -438,6 +438,7 @@
         'outletTempTrends',
         'roomTemp',
         'roomTempTrends',
+        'tempUnit',
       ]),
     },
   }

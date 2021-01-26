@@ -4,6 +4,7 @@
    transition="dialog-bottom-transition"
    max-width="600"
    @click:outside="$emit('close')"
+   @keydown.esc="$emit('close')"
   >
     <v-card>
       <v-toolbar color="primary" dark>
@@ -30,7 +31,7 @@
               </tr>
               <tr>
                 <td>Outlet Temperature</td>
-                <td>{{outletTemp.toFixed(1)}} °C</td>
+                <td>{{outletTemp.toFixed(1)}} {{tempUnit}}</td>
               </tr>
               <tr>
                 <td>Fan</td>
@@ -71,6 +72,7 @@
         'glowPlugOn',
         'pumpRunning',
         'pumpFreq',
+        'tempUnit',
       ]),
     },
     props: {

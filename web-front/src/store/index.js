@@ -26,6 +26,16 @@ function commitHeaterStatus(context, data) {
   context.commit('CHANGE_STATE', data.state)
 }
 
+function getTempUnitFromLocalStorage() {
+  let unit = localStorage.getItem('tempUnit')
+
+  if (unit === null) {
+    localStorage.setItem('tempUnit', '°C')
+    unit = '°C'
+  }
+  return unit
+}
+
 export default new Vuex.Store({
   state: {
     fanRunning: false,
@@ -40,6 +50,7 @@ export default new Vuex.Store({
     outletTempTrends: [],
     roomTemp: 0.0,
     roomTempTrends: [],
+    tempUnit: getTempUnitFromLocalStorage(),
   },
   mutations: {
     CHANGE_FAN_RUNNING(state, v) {
@@ -67,6 +78,13 @@ export default new Vuex.Store({
       state.commStatus = v
     },
     PUSH_OUTLET_TEMPERATURE(state, v) {
+      //
+      // reported temperature from esp32 is always in C
+      //
+      if (state.tempUnit !== '°C') {
+        v = (v * 9/5) + 32
+      }
+
       state.outletTemp = v
       state.outletTempTrends.push(v)
 
@@ -75,6 +93,13 @@ export default new Vuex.Store({
       }
     },
     PUSH_ROOM_TEMPERATURE(state, v) {
+      //
+      // reported temperature from esp32 is always in C
+      //
+      if (state.tempUnit !== '°C') {
+        v = (v * 9/5) + 32
+      }
+
       state.roomTemp = v
       state.roomTempTrends.push(v)
 
@@ -82,6 +107,18 @@ export default new Vuex.Store({
         state.roomTempTrends.shift()
       }
     },
+    TOGGLE_TEMP_UNIT(state) {
+      if (state.tempUnit === '°C') {
+        state.tempUnit = '°F'
+      } else {
+        state.tempUnit = '°C'
+      }
+
+      localStorage.setItem('tempUnit', state.tempUnit)
+
+      state.roomTempTrends = []
+      state.outletTempTrends = []
+    }
   },
   getters: {
     fanRunning(state) {
@@ -123,6 +160,9 @@ export default new Vuex.Store({
     roomTempTrends(state) {
       return state.roomTempTrends
     },
+    tempUnit(state) {
+      return state.tempUnit
+    }
   },
   actions: {
     pollStatus(context) {

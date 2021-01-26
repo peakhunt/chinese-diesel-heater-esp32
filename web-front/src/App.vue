@@ -13,6 +13,14 @@
       <v-spacer></v-spacer>
 
       <v-chip
+       color="success"
+       elevation="4"
+       @click="$store.commit('TOGGLE_TEMP_UNIT')"
+       >
+        Temperature Unit {{ tempUnit }}
+      </v-chip>
+
+      <v-chip
        :color="commStatus ? 'success' : 'error'"
        elevation="4"
        >
@@ -41,6 +49,7 @@ export default {
   computed: {
     ...mapGetters([
       'commStatus',
+      'tempUnit',
     ]),
   }
 };
