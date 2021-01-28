@@ -533,7 +533,7 @@ cli_command_settings(cli_intf_t* intf, int argc, const char** argv)
 	cli_printf(intf, CLI_EOL);
 
 	cli_printf(intf, "0. glow plug on duration for start %ld sec"CLI_EOL, s.glow_plug_on_duration_for_start / 1000);
-	cli_printf(intf, "1. oil pump priming duratuin       %ld sec"CLI_EOL, s.oil_pump_priming_duration / 1000);
+	cli_printf(intf, "1. oil pump priming duration       %ld sec"CLI_EOL, s.oil_pump_priming_duration / 1000);
 	cli_printf(intf, "2. glow plug on duration for stop  %ld sec"CLI_EOL, s.glow_plug_on_duration_for_stop / 1000);
 	cli_printf(intf, "3. cooling down period             %ld sec"CLI_EOL, s.cooling_down_period / 1000);
 	cli_printf(intf, "4. start-up fan power              %d %%"CLI_EOL, s.startup_fan_power);
@@ -639,19 +639,19 @@ cli_command_mod(cli_intf_t* intf, int argc, const char** argv)
 
   case 4: // start up fan power
     iv = atol(argv[2]);
-    if(iv < 10 || iv > 180)
+    if(iv < 10 || iv > 100)
     {
-      cli_printf(intf, "invalid: value should be between  10 and 180"CLI_EOL);
+      cli_printf(intf, "invalid: value should be between  10 and 100"CLI_EOL);
       return;
     }
-    // s->startup_fan_power = iv;
+    r.u8 = iv;
     break;
 
   case 5: // stop fan power
     iv = atol(argv[2]);
-    if(iv < 10 || iv > 180)
+    if(iv < 10 || iv > 100)
     {
-      cli_printf(intf, "invalid: value should be between  10 and 180"CLI_EOL);
+      cli_printf(intf, "invalid: value should be between  10 and 100"CLI_EOL);
       return;
     }
     r.u8 = iv;
@@ -659,7 +659,7 @@ cli_command_mod(cli_intf_t* intf, int argc, const char** argv)
 
   case 6: // glow plug PWM frequency
     iv = atol(argv[2]);
-    if(iv < 3 || iv > 20)
+    if(iv < 2 || iv > 20)
     {
       cli_printf(intf, "invalid: value should be between 2 and 20"CLI_EOL);
       return;
