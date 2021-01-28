@@ -168,8 +168,14 @@
     />
 
     <LoaderDialog
+     key="heater-loader"
      :open="loaderOpen"
      :message="loaderMessage"
+    />
+
+    <SettingsDialog
+     :open="settingsDialogOpen"
+     @close="onSettingsDialogClose"
     />
 
     <v-snackbar v-model="snackbar">
@@ -200,6 +206,7 @@
   import FanDialog from './FanDialog'
   import HeaterDialog from './HeaterDialog'
   import LoaderDialog from './LoaderDialog'
+  import SettingsDialog from './SettingsDialog'
   import { mapGetters } from 'vuex'
 
   export default {
@@ -215,6 +222,7 @@
       FanDialog,
       HeaterDialog,
       LoaderDialog,
+      SettingsDialog,
     },
     data: () => ({
       glowPlugDialogOpen: false,
@@ -225,6 +233,7 @@
       loaderMessage: 'Please standby',
       snackbar: false,
       snackbarMsg: '',
+      settingsDialogOpen: false,
     }),
     methods: {
       //
@@ -419,10 +428,19 @@
           }
         });
       },
+      //
+      // Settings
+      //
+      onSettingsDialogClose() {
+        this.settingsDialogOpen = false
+      },
+      openSettingsDialog() {
+        this.settingsDialogOpen = true
+      },
     },
     mounted: function () {
       this.statusPollTmr =  setInterval(() => {
-        this.$store.dispatch(`pollStatus`)
+        this.$store.dispatch('pollStatus')
       }, 1000)
     },
     computed: {

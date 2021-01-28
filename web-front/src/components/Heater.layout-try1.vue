@@ -160,10 +160,9 @@
     methods: {
     },
     mounted: function () {
-      /*
       this.statusPollTmr =  setInterval(() => {
         this.$store.dispatch(`pollStatus`)
-      }, 1000) */
+      }, 1000)
     },
     computed: {
       ...mapGetters([

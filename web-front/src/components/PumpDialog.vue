@@ -33,12 +33,12 @@
          min="0.5"
          max="5.0"
          v-model="newPumpFreq"
-         @end="$emit('freq', newPumpFreq)"
         >
         </v-slider>
       </v-card-text>
 
       <v-card-actions class="justify-end">
+        <v-btn text @click="$emit('freq', newPumpFreq)">Update</v-btn>
         <v-btn :disabled="pumpRunning" text @click="$emit('start')">Start</v-btn>
         <v-btn :disabled="!pumpRunning" text @click="$emit('stop')">Stop</v-btn>
       </v-card-actions>

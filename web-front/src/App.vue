@@ -13,23 +13,23 @@
       <v-spacer></v-spacer>
 
       <v-chip
-       color="success"
-       elevation="4"
-       @click="$store.commit('TOGGLE_TEMP_UNIT')"
-       >
-        Temperature Unit {{ tempUnit }}
-      </v-chip>
-
-      <v-chip
        :color="commStatus ? 'success' : 'error'"
        elevation="4"
        >
         Comm {{ commStatus ? 'OK' : 'Fail' }}
       </v-chip>
+
+      <v-chip
+       color="success"
+       elevation="4"
+       @click="$refs.heater.openSettingsDialog()"
+       >
+        Settings
+      </v-chip>
     </v-app-bar>
 
     <v-main>
-      <Heater/>
+      <Heater ref="heater"/>
     </v-main>
   </v-app>
 </template>

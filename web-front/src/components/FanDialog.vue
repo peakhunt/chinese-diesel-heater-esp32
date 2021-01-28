@@ -32,11 +32,11 @@
          min="0"
          max="100"
          v-model="newFanPower"
-         @end="$emit('power', newFanPower)"
         >
         </v-slider>
       </v-card-text>
       <v-card-actions class="justify-end">
+        <v-btn text @click="$emit('power', newFanPower)">Update</v-btn>
         <v-btn :disabled="fanRunning" text @click="$emit('start')">Start</v-btn>
         <v-btn :disabled="!fanRunning" text @click="$emit('stop')">Stop</v-btn>
       </v-card-actions>
