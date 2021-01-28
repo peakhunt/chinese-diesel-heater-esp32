@@ -18,6 +18,11 @@ ntc50_calc_temp(ntc50_t* ntc50)
   steinhart = 1.0 / steinhart;
   steinhart -= 273.15;
 
+  if(isnan(steinhart))
+  {
+    steinhart = 0.0f;
+  }
+
   ntc50->temp = ntc50->temp - (LPF_Beta * (ntc50->temp - steinhart));
 }
 
