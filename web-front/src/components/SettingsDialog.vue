@@ -1,11 +1,10 @@
 <template>
   <v-dialog
-   :value="open"
+   :value="value"
+   @input="$emit('input', $event)"
    eager
    fullscreen
    transition="dialog-bottom-transition"
-   @click:outside="$emit('close')"
-   @keydown.esc="$emit('close')"
   >
     <v-card>
       <v-toolbar color="primary">
@@ -108,17 +107,15 @@
       ></LoaderDialog>
 
       <EditSettingDialog
-       :open="editSettingOpen"
+       v-model="editSettingOpen"
        :desc="editSettingDesc"
        :setting="editSetting"
-       @close="onEditSettingClose"
        @change="onEditSettingChange"
       />
 
       <EditStepDialog
-       :open="editStepOpen"
+       v-model="editStepOpen"
        :desc="editStep"
-       @close="onEditStepClose"
        @change="onEditStepChange"
       />
 
@@ -180,9 +177,6 @@
         this.editSetting = item.isInt ? this.settings[sName] / item.divider : this.settings[sName]
         this.editSettingOpen = true
       },
-      onEditSettingClose() {
-        this.editSettingOpen = false
-      },
       onEditSettingChange(obj) {
         const { desc, setValue } = obj
         const self = this
@@ -207,9 +201,6 @@
           self.showSnackbar(`failed to update ${desc.name}`)
           self.closeLoader()
         })
-      },
-      onEditStepClose() {
-        this.editStepOpen = false
       },
       onStepClick(index, step) {
         this.editStep = { index, step }
@@ -395,13 +386,13 @@
       }
     }),
     props: {
-      open: {
+      value: {
         type: Boolean,
         default: false,
       },
     },
     watch: {
-      open: function(newVal) {
+      value: function(newVal) {
         let self = this
 
         if (newVal) {
@@ -422,12 +413,12 @@
           .catch(function () {
             self.closeLoader()
             self.showSnackbar('failed to retrieve settings from server')
-            self.errorOnLoadSettings = true
+            //self.errorOnLoadSettings = true
             //
             // XXX
             // for test. 
             //
-            //self.settings = self.demoSettings
+            self.settings = self.demoSettings
           })
         }
       },

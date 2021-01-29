@@ -1,9 +1,8 @@
 <template>
   <v-dialog
-   :value="open"
+   :value="value"
+   @input="$emit('input', $event)"
    width="600"
-   @click:outside="$emit('close')"
-   @keydown.esc="$emit('close')"
   >
     <v-card v-if="desc !== null">
       <v-card-title>step {{desc.index}}</v-card-title>
@@ -50,7 +49,7 @@
       freq: 0.0,
     }),
     props: {
-      open: {
+      value: {
         type: Boolean,
         default: false,
       },
@@ -62,7 +61,7 @@
     methods: {
     },
     watch: {
-      open: function(newVal) {
+      value: function(newVal) {
         if (newVal) {
           this.power = this.desc.step.fan_pwr
           this.freq = this.desc.step.pump_freq

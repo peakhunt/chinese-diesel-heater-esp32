@@ -22,7 +22,7 @@
                onColor="blue"
                offColor="black"
                :running="this.fanRunning"
-               @click="onFanClick"/>
+               @click="fanDialogOpen = true"/>
 
               <GlowPlugIcon
                x="400" y="65"
@@ -31,7 +31,7 @@
                offColor="black"
                onColor="red"
                :running="this.glowPlugOn"
-               @click="onGlowPlugClick"
+               @click="glowPlugDialogOpen = true"
               />
 
               <FireIcon
@@ -39,7 +39,7 @@
                width="250"
                height="250"
                :running="this.flameDetected"
-               @click="onHeaterClick"/>
+               @click="heaterDialogOpen = true"/>
 
               <PumpIcon
                x="500" y="65"
@@ -48,7 +48,7 @@
                onColor="blue"
                offColor="black"
                :running="this.pumpRunning"
-               @click="onPumpClick"/>
+               @click="pumpDialogOpen = true"/>
 
               <svg x="110" y="70" width="215" height="40">
                 <line x1="0" y1="0" x2="215" y2="0" style="stroke:black; stroke-width: 76"/>  
@@ -138,31 +138,27 @@
     </v-row>
 
     <GlowPlugDialog
-     :open="glowPlugDialogOpen"
-     @close="onGlowPlugDialogClose"
+     v-model="glowPlugDialogOpen"
      @on="onGlowPlugOnClick"
      @off="onGlowPlugOffClick"
     />
 
     <PumpDialog
-     :open="pumpDialogOpen"
-     @close="onPumpDialogClose"
+     v-model="pumpDialogOpen"
      @start="onPumpStartClick"
      @stop="onPumpStopClick"
      @freq="onPumpFreqChange"
     />
 
     <FanDialog
-     :open="fanDialogOpen"
-     @close="onFanDialogClose"
+     v-model="fanDialogOpen"
      @start="onFanStartClick"
      @stop="onFanStopClick"
      @power="onFanPowerChange"
     />
 
     <HeaterDialog
-     :open="heaterDialogOpen"
-     @close="onHeaterDialogClose"
+     v-model="heaterDialogOpen"
      @start="onHeaterStartClick"
      @stop="onHeaterStopClick"
     />
@@ -174,8 +170,7 @@
     />
 
     <SettingsDialog
-     :open="settingsDialogOpen"
-     @close="onSettingsDialogClose"
+     v-model="settingsDialogOpen"
     />
 
     <v-snackbar v-model="snackbar">
@@ -253,12 +248,6 @@
       //
       // glow plug
       //
-      onGlowPlugClick() {
-        this.glowPlugDialogOpen = true
-      },
-      onGlowPlugDialogClose() {
-        this.glowPlugDialogOpen = false
-      },
       onGlowPlugOnClick() {
         let self = this
 
@@ -290,12 +279,6 @@
       //
       // pump
       //
-      onPumpClick() {
-        this.pumpDialogOpen = true
-      },
-      onPumpDialogClose() {
-        this.pumpDialogOpen = false
-      },
       onPumpStartClick() {
         let self = this
 
@@ -342,12 +325,6 @@
       //
       // fan
       //
-      onFanClick() {
-        this.fanDialogOpen = true
-      },
-      onFanDialogClose() {
-        this.fanDialogOpen = false
-      },
       onFanStartClick() {
         let self = this
 
@@ -394,12 +371,6 @@
       //
       // Heater
       //
-      onHeaterClick() {
-        this.heaterDialogOpen = true
-      },
-      onHeaterDialogClose() {
-        this.heaterDialogOpen = false
-      },
       onHeaterStartClick() {
         let self = this
 
@@ -431,9 +402,6 @@
       //
       // Settings
       //
-      onSettingsDialogClose() {
-        this.settingsDialogOpen = false
-      },
       openSettingsDialog() {
         this.settingsDialogOpen = true
       },

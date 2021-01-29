@@ -1,10 +1,9 @@
 <template>
   <v-dialog
-   :value="open"
+   :value="value"
+   @input="$emit('input', $event)"
    transition="dialog-bottom-transition"
    max-width="600"
-   @click:outside="$emit('close')"
-   @keydown.esc="$emit('close')"
   >
     <v-card>
       <v-toolbar color="primary" dark>
@@ -55,7 +54,7 @@
       ]),
     },
     props: {
-      open: {
+      value: {
         type: Boolean,
         default: false,
       },
@@ -70,7 +69,7 @@
       newFanPower: 0,
     }),
     watch: {
-      open: function(newVal) {
+      value: function(newVal) {
         if (newVal) {
           this.newFanPower = this.fanPower
         }

@@ -1,9 +1,8 @@
 <template>
   <v-dialog
-   :value="open"
+   :value="value"
+   @input="$emit('input', $event)"
    width="400"
-   @click:outside="$emit('close')"
-   @keydown.esc="$emit('close')"
   >
     <v-card v-if="desc !== null">
       <v-card-title>{{desc.name}}</v-card-title>
@@ -32,7 +31,7 @@
       setValue: 0,
     }),
     props: {
-      open: {
+      value: {
         type: Boolean,
         default: false,
       },
@@ -48,7 +47,7 @@
     methods: {
     },
     watch: {
-      open: function(newVal) {
+      value: function(newVal) {
         if (newVal) {
           this.setValue = this.setting
         }
