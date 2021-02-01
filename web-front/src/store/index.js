@@ -279,6 +279,50 @@ export default new Vuex.Store({
         callback(err)
       })
     },
+    heaterSettingsGet(context, { callback }) {
+      Vue.axios.get('/api/v1/heater/settings')
+      .then((response) => {
+
+        if (response.status !== 200) {
+          callback(null,'status != 200')
+        } else {
+          callback(response.data)
+        }
+      })
+      .catch(function () {
+        callback(null, 'exception')
+      })
+    },
+    heaterSettingChange(context, { ndx, value, callback }) {
+      Vue.axios.post('/api/v1/heater/settings/mod',
+        { ndx, value }
+      )
+      .then((response) => {
+
+        if (response.status !== 200) {
+          callback(null, 'status != 200')
+        }
+        callback(response.data)
+      })
+      .catch(function() {
+        callback(null, 'exception')
+      })
+    },
+    heaterStepChange(context, { ndx, pwr, freq, callback }) {
+      Vue.axios.post('/api/v1/heater/settings/step',
+        { ndx, pwr, freq }
+      )
+      .then((response) => {
+
+        if (response.status !== 200) {
+          callback(null, 'status != 200')
+        }
+        callback(response.data)
+      })
+      .catch(function() {
+        callback(null, 'exception')
+      })
+    },
   },
   modules: {
   },

@@ -260,7 +260,7 @@
             } 
             self.closeLoader()
           }
-        });
+        })
       },
       onGlowPlugOffClick() {
         let self = this
