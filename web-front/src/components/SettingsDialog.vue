@@ -8,7 +8,7 @@
   >
     <v-card>
       <v-toolbar color="primary">
-        <v-btn outlined @click="$emit('close')">X</v-btn>
+        <v-btn outlined @click="$emit('input', false)">X</v-btn>
         <v-spacer></v-spacer>
         <v-toolbar-title>Settings</v-toolbar-title>
       </v-toolbar>
@@ -183,24 +183,21 @@
 
         self.editSettingOpen = false
         self.showLoader(`updating ${desc.name}...`)
-        self.axios.post('/api/v1/heater/settings/mod',
+        self.$store.dispatch('heaterSettingChange',
           {
             ndx: desc.ndx,
             value: desc.isInt ? setValue * desc.divider : setValue,
-          })
-        .then((response) => {
-            if (response.status !== 200) {
-              self.showSnackbar(`failed to update ${desc.name}`)
+            callback: (settings, err) => {
               self.closeLoader()
-              return
+
+              if (err) {
+                self.showSnackbar(`failed to update ${desc.name}`)
+              } else {
+                self.settings = settings
+              }
             }
-            self.settings = response.data
-            self.closeLoader()
-        })
-        .catch(function() {
-          self.showSnackbar(`failed to update ${desc.name}`)
-          self.closeLoader()
-        })
+          }
+        )
       },
       onStepClick(index, step) {
         this.editStep = { index, step }
@@ -212,25 +209,23 @@
 
         self.editStepOpen = false
         self.showLoader(`updating step-${desc.index}...`)
-        self.axios.post('/api/v1/heater/settings/step',
+
+        self.$store.dispatch('heaterStepChange',
           {
             ndx: desc.index,
             pwr: power,
             freq: freq,
-          })
-        .then((response) => {
-            if (response.status !== 200) {
-              self.showSnackbar(`failed to update step-${desc.index}`)
+            callback: (settings, err) => {
               self.closeLoader()
-              return
+
+              if (err) {
+                self.showSnackbar(`failed to update step-${desc.index}`)
+              } else {
+                self.settings = settings
+              }
             }
-            self.settings = response.data
-            self.closeLoader()
-        })
-        .catch(function() {
-          self.showSnackbar(`failed to update step-${desc.index}`)
-          self.closeLoader()
-        })
+          }
+        )
       },
     },
     data: () => ({
@@ -350,40 +345,6 @@
           step: 1,
         },
       ],
-      demoSettings: {
-        s0: 30000,
-        s1: 7000,
-        s2: 50000,
-        s3: 60000,
-        s4: 30,
-        s5: 70,
-        s6: 6,
-        s7: 70,
-        s8: 2.5,
-        s9: 50,
-        steps: [
-          {
-            pump_freq: 1.0,
-            fan_pwr: 45,
-          },
-          {
-            pump_freq: 1.5,
-            fan_pwr: 55,
-          },
-          {
-            pump_freq: 2.0,
-            fan_pwr: 65,
-          },
-          {
-            pump_freq: 2.5,
-            fan_pwr: 70,
-          },
-          {
-            pump_freq: 3.0,
-            fan_pwr: 75,
-          },
-        ],
-      }
     }),
     props: {
       value: {
@@ -400,25 +361,17 @@
           self.errorOnLoadSettings = false
           self.showLoader('retrieving settings data')
 
-          self.axios.get('/api/v1/heater/settings').then((response) => {
-            if (response.status !== 200) {
+          self.$store.dispatch('heaterSettingsGet', {
+            callback: (settings, err) => {
               self.closeLoader()
-              self.errorOnLoadSettings = true
-              self.showSnackbar('failed to retrieve settings from server')
-              return;
+
+              if (err) {
+                self.errorOnLoadSettings = true
+                self.showSnackbar('failed to retrieve settings from server')
+              } else {
+                self.settings = settings 
+              }
             }
-            self.settings = response.data
-            self.closeLoader()
-          })
-          .catch(function () {
-            self.closeLoader()
-            self.showSnackbar('failed to retrieve settings from server')
-            //self.errorOnLoadSettings = true
-            //
-            // XXX
-            // for test. 
-            //
-            self.settings = self.demoSettings
           })
         }
       },
