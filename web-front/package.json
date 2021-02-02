@@ -37,7 +37,6 @@
     "sass-loader": "^8.0.0",
     "typeface-roboto": "^1.1.13",
     "vue-cli-plugin-compression": "~1.0.3",
-    "vue-cli-plugin-electron": "0.0.0",
     "vue-cli-plugin-electron-builder": "~2.0.0-rc.6",
     "vue-cli-plugin-vuetify": "~2.0.9",
     "vue-template-compiler": "^2.6.11",
