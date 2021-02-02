@@ -13,6 +13,10 @@ module.exports = {
     "vuetify"
   ],
   pluginOptions: {
+    electronBuilder: {
+      nodeIntegration: true,
+      externals: ["serialport"],
+    },
     compression:{
       gzip: {
         filename: '[path].gz[query]',
