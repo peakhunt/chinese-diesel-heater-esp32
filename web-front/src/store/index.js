@@ -55,6 +55,7 @@ export default new Vuex.Store({
     roomTemp: 0.0,
     roomTempTrends: [],
     tempUnit: getTempUnitFromLocalStorage(),
+    polltmr: null,
   },
   mutations: {
     CHANGE_FAN_RUNNING(state, v) {
@@ -122,6 +123,9 @@ export default new Vuex.Store({
 
       state.roomTempTrends = []
       state.outletTempTrends = []
+    },
+    SET_POLL_TMR(state, tmr) {
+      state.polltmr = tmr
     }
   },
   getters: {
@@ -166,6 +170,9 @@ export default new Vuex.Store({
     },
     tempUnit(state) {
       return state.tempUnit
+    },
+    pollTmr(state) {
+      return state.pollTmr
     }
   },
   actions: {
@@ -326,6 +333,14 @@ export default new Vuex.Store({
       .catch(function() {
         callback(null, 'exception')
       })
+    },
+    startPolling( { commit, dispatch } ) {
+      let polltmr
+
+      polltmr = setInterval(() => {
+        dispatch('pollStatus')
+      }, 1000)
+      commit('SET_POLL_TMR', polltmr)
     },
   },
   modules: {

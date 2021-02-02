@@ -407,9 +407,7 @@
       },
     },
     mounted: function () {
-      this.statusPollTmr =  setInterval(() => {
-        this.$store.dispatch('pollStatus')
-      }, 1000)
+      this.$store.dispatch('startPolling')
     },
     computed: {
       ...mapGetters([
