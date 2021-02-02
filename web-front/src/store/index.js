@@ -1,6 +1,10 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
+/// #if RUN_TARGET == 'electron'
+import CLISerialPort from './cli_serialport'
+/// #endif
+
 Vue.use(Vuex)
 
 const stateStrings = [
@@ -325,6 +329,9 @@ export default new Vuex.Store({
     },
   },
   modules: {
+/// #if RUN_TARGET == 'electron'
+    CLISerialPort,
+/// #endif
   },
   strict: true
 })
