@@ -25,6 +25,7 @@
     "compression-webpack-plugin": "^6.0.4",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.2.2",
+    "ifdef-loader": "^2.1.5",
     "sass": "^1.32.5",
     "sass-loader": "^8.0.0",
     "typeface-roboto": "^1.1.13",

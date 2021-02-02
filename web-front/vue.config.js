@@ -4,17 +4,6 @@ module.exports = {
   ],
   pluginOptions: {
     compression:{
-      /*
-      brotli: {
-        filename: '[path].br[query]',
-        algorithm: 'brotliCompress',
-        include: /\.(js|css|html|svg|json)(\?.*)?$/i,
-        compressionOptions: {
-          level: 11,
-        },
-        minRatio: 0.8,
-        deleteOriginalAssets: true,
-      }, */
 		  gzip: {
 			  filename: '[path].gz[query]',
 			  algorithm: 'gzip',
@@ -23,5 +12,15 @@ module.exports = {
 			  deleteOriginalAssets: true,
 		  }
     }
+  },
+	chainWebpack: config => {
+    // ifdef-loader
+    config.module
+      .rule('ifdef-loader')
+      .test(/\.(js|vue)$/)
+      .use('ifdef-loader')
+        .loader('ifdef-loader')
+        .options(opts)
+        .end()
   }
 }
