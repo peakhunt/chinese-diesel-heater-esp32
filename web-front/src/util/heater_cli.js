@@ -1,7 +1,8 @@
-const transaction_timeout = 2000
-const cmd_prompt = 'Heater> '
+const transaction_timeout = 500
+const cmd_prompt = 'STM32F1> '
 
 function _executeNext(heater_cli) {
+  heater_cli._timeout = null
   heater_cli._transaction = null
 
   if (heater_cli._queue.length === 0) {
@@ -17,7 +18,7 @@ function _executeTransaction(heater_cli, t) {
   heater_cli._transaction   = t
   heater_cli._received      = ''
 
-  heater_cli._port.write(t.cmd)
+  heater_cli._port.write(t.cmd, 'ascii')
   heater_cli._timeout = setTimeout(() => {
     t.callback(null, 'transaction timeout')
     _executeNext(heater_cli)
@@ -76,6 +77,12 @@ HeaterCLI.prototype.open = function(callback) {
 HeaterCLI.prototype.close = function(callback) {
   if (this._port) {
     this._port.removeAllListeners("data")
+
+    this._transaction = null
+    if (this._timeout !== null) {
+      clearTimeout(this._timeout)
+    }
+
     this._port.close(callback)
   }
 }
