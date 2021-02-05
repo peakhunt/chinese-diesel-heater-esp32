@@ -8,6 +8,18 @@ const opts = {
   "ifdef-verbose" : true,
 }
 
+let gzip_opt = {
+  filename: '[path].gz[query]',
+  algorithm: 'gzip',
+  include: /\.(js|css|html|svg|json)(\?.*)?$/i,
+  minRatio: 0.8,
+  deleteOriginalAssets: true,
+}
+
+if(/^electron:build/.test(process.argv[2])) {
+  gzip_opt = undefined
+}
+
 module.exports = {
   "transpileDependencies": [
     "vuetify"
@@ -18,13 +30,7 @@ module.exports = {
       externals: ["serialport"],
     },
     compression:{
-      gzip: {
-        filename: '[path].gz[query]',
-        algorithm: 'gzip',
-        include: /\.(js|css|html|svg|json)(\?.*)?$/i,
-        minRatio: 0.8,
-        deleteOriginalAssets: true,
-      }
+      gzip: gzip_opt,
     }
   },
   chainWebpack: config => {
