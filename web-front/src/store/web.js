@@ -10,7 +10,7 @@ export default {
         }
 
         context.commit('CHANGE_COMM_STATUS', true)
-        context.commit('commitHeaterStatus', response.data)
+        context.dispatch('commitHeaterStatus', response.data)
       })
       .catch(function () {
         context.commit('CHANGE_COMM_STATUS', false)
@@ -18,7 +18,7 @@ export default {
     },
     fanStartWeb(context, { callback }) {
       Vue.axios.post('/api/v1/heater/fan/start').then((response) => {
-        context.commit('commitHeaterStatus', response.data)
+        context.dispatch('commitHeaterStatus', response.data)
         callback()
       })
       .catch(function (err) {
@@ -27,7 +27,7 @@ export default {
     },
     fanStopWeb(context, { callback }) {
       Vue.axios.post('/api/v1/heater/fan/stop').then((response) => {
-        context.commit('commitHeaterStatus', response.data)
+        context.dispatch('commitHeaterStatus', response.data)
         callback()
       })
       .catch(function (err) {
@@ -36,7 +36,7 @@ export default {
     },
     fanPowerWeb(context, { power, callback }) {
       Vue.axios.post('/api/v1/heater/fan/power', { power }).then((response) => {
-        context.commit('commitHeaterStatus', response.data)
+        context.dispatch('commitHeaterStatus', response.data)
         callback()
       })
       .catch(function (err) {
@@ -45,7 +45,7 @@ export default {
     },
     pumpStartWeb(context, { callback }) {
       Vue.axios.post('/api/v1/heater/pump/start').then((response) => {
-        context.commit('commitHeaterStatus', response.data)
+        context.dispatch('commitHeaterStatus', response.data)
         callback()
       })
       .catch(function (err) {
@@ -54,7 +54,7 @@ export default {
     },
     pumpStopWeb(context, { callback }) {
       Vue.axios.post('/api/v1/heater/pump/stop').then((response) => {
-        context.commit('commitHeaterStatus', response.data)
+        context.dispatch('commitHeaterStatus', response.data)
         callback()
       })
       .catch(function (err) {
@@ -63,7 +63,7 @@ export default {
     },
     pumpFreqWeb(context, { freq, callback }) {
       Vue.axios.post('/api/v1/heater/pump/freq', { freq }).then((response) => {
-        context.commit('commitHeaterStatus', response.data)
+        context.dispatch('commitHeaterStatus', response.data)
         callback()
       })
       .catch(function (err) {
@@ -72,7 +72,7 @@ export default {
     },
     glowOnWeb(context, { callback }) {
       Vue.axios.post('/api/v1/heater/glowplug/on').then((response) => {
-        context.commit('commitHeaterStatus', response.data)
+        context.dispatch('commitHeaterStatus', response.data)
         callback()
       })
       .catch(function (err) {
@@ -81,7 +81,7 @@ export default {
     },
     glowOffWeb(context, { callback }) {
       Vue.axios.post('/api/v1/heater/glowplug/off').then((response) => {
-        context.commit('commitHeaterStatus', response.data)
+        context.dispatch('commitHeaterStatus', response.data)
         callback()
       })
       .catch(function (err) {
@@ -90,7 +90,7 @@ export default {
     },
     heaterStartWeb(context, { callback }) {
       Vue.axios.post('/api/v1/heater/start').then((response) => {
-        context.commit('commitHeaterStatus', response.data)
+        context.dispatch('commitHeaterStatus', response.data)
         callback()
       })
       .catch(function (err) {
@@ -99,7 +99,7 @@ export default {
     },
     heaterStopWeb(context, { callback }) {
       Vue.axios.post('/api/v1/heater/stop').then((response) => {
-        context.commit('commitHeaterStatus', response.data)
+        context.dispatch('commitHeaterStatus', response.data)
         callback()
       })
       .catch(function (err) {
