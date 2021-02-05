@@ -1,5 +1,5 @@
 const transaction_timeout = 500
-const cmd_prompt = 'STM32F1> '
+const cmd_prompt = 'Heater> '
 
 function _executeNext(heater_cli) {
   heater_cli._timeout = null
