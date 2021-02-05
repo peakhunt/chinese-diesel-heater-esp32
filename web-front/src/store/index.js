@@ -45,7 +45,7 @@ export default new Vuex.Store({
     roomTemp: 0.0,
     roomTempTrends: [],
     tempUnit: getTempUnitFromLocalStorage(),
-    polltmr: null,
+    pollTmr: null,
     portName: '',
     availablePorts: [],
   },
@@ -208,70 +208,70 @@ export default new Vuex.Store({
 /// #if RUN_TARGET == 'web'
       context.dispatch('fanStartWeb', { callback })
 /// #elif RUN_TARGET == 'electron'
-      // FIXME
+      context.dispatch('fanStartCLI', { callback })
 /// #endif 
     },
     fanStop(context, { callback }) {
 /// #if RUN_TARGET == 'web'
       context.dispatch('fanStopWeb', { callback })
 /// #elif RUN_TARGET == 'electron'
-      // FIXME
+      context.dispatch('fanStopCLI', { callback })
 /// #endif 
     },
     fanPower(context, { power, callback }) {
 /// #if RUN_TARGET == 'web'
       context.dispatch('fanPowerWeb', { power, callback })
 /// #elif RUN_TARGET == 'electron'
-      // FIXME
+      context.dispatch('fanPowerCLI', { power, callback })
 /// #endif 
     },
     pumpStart(context, { callback }) {
 /// #if RUN_TARGET == 'web'
       context.dispatch('pumpStartWeb', { callback })
 /// #elif RUN_TARGET == 'electron'
-      // FIXME
+      context.dispatch('pumpStartCLI', { callback })
 /// #endif 
     },
     pumpStop(context, { callback }) {
 /// #if RUN_TARGET == 'web'
       context.dispatch('pumpStopWeb', { callback })
 /// #elif RUN_TARGET == 'electron'
-      // FIXME
+      context.dispatch('pumpStopCLI', { callback })
 /// #endif 
     },
     pumpFreq(context, { freq, callback }) {
 /// #if RUN_TARGET == 'web'
       context.dispatch('pumpFreqWeb', { freq, callback })
 /// #elif RUN_TARGET == 'electron'
-      // FIXME
+      context.dispatch('pumpFreqCLI', { freq, callback })
 /// #endif 
     },
     glowOn(context, { callback }) {
 /// #if RUN_TARGET == 'web'
       context.dispatch('glowOnWeb', { callback })
 /// #elif RUN_TARGET == 'electron'
-      // FIXME
+      context.dispatch('glowOnCLI', { callback })
 /// #endif 
     },
     glowOff(context, { callback }) {
 /// #if RUN_TARGET == 'web'
       context.dispatch('glowOffWeb', { callback })
 /// #elif RUN_TARGET == 'electron'
-      // FIXME
+      context.dispatch('glowOffCLI', { callback })
 /// #endif 
     },
     heaterStart(context, { callback }) {
 /// #if RUN_TARGET == 'web'
       context.dispatch('heaterStartWeb', { callback })
 /// #elif RUN_TARGET == 'electron'
-      // FIXME
+      context.dispatch('heaterStartCLI', { callback })
 /// #endif 
     },
     heaterStop(context, { callback }) {
 /// #if RUN_TARGET == 'web'
       context.dispatch('heaterStopWeb', { callback })
 /// #elif RUN_TARGET == 'electron'
-      // FIXME
+      context.dispatch('heaterStopCLI', { callback })
 /// #endif 
     },
     heaterSettingsGet(context, { callback }) {
@@ -302,6 +302,12 @@ export default new Vuex.Store({
       // FIXME
 /// #endif 
     },
+    stopPolling(context) {
+      if (context.getters.pollTmr !== null) {
+        clearTimeout(context.getters.pollTmr)
+        context.commit('SET_POLL_TMR', null)
+      }
+    }
   },
   modules: {
     webAPI,
