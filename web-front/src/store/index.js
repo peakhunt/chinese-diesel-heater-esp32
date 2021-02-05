@@ -1,8 +1,10 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
+import webAPI from './web.js'
+
 /// #if RUN_TARGET == 'electron'
-import CLISerialPort from './cli_serialport'
+import cliAPI from './cli'
 /// #endif
 
 Vue.use(Vuex)
@@ -17,18 +19,6 @@ const stateStrings = [
 ];
 
 const numMaxTrends = 300
-
-function commitHeaterStatus(context, data) {
-  context.commit('CHANGE_FAN_RUNNING', data.fanRunning)
-  context.commit('CHANGE_FAN_POWER', data.fanPower)
-  context.commit('CHANGE_PUMP_RUNNING', data.pumpRunning)
-  context.commit('CHANGE_PUMP_FREQ', data.pumpFreq)
-  context.commit('PUSH_OUTLET_TEMPERATURE', data.outletTemp)
-  context.commit('PUSH_ROOM_TEMPERATURE', 0)   // FIXME
-  context.commit('CHANGE_GLOW_PLUG_ON', data.glowPlugOn)
-  context.commit('CHANGE_FLAME_DETECTED', data.flameDetected)
-  context.commit('CHANGE_STATE', data.state)
-}
 
 function getTempUnitFromLocalStorage() {
   let unit = localStorage.getItem('tempUnit')
@@ -56,6 +46,8 @@ export default new Vuex.Store({
     roomTempTrends: [],
     tempUnit: getTempUnitFromLocalStorage(),
     polltmr: null,
+    portName: '',
+    availablePorts: [],
   },
   mutations: {
     CHANGE_FAN_RUNNING(state, v) {
@@ -126,7 +118,13 @@ export default new Vuex.Store({
     },
     SET_POLL_TMR(state, tmr) {
       state.polltmr = tmr
-    }
+    },
+    SET_PORT_NAME(state, n) {
+      state.portName = n
+    },
+    SET_PORT_LIST(state, pl) {
+      state.availablePorts = pl
+    },
   },
   getters: {
     fanRunning(state) {
@@ -173,179 +171,142 @@ export default new Vuex.Store({
     },
     pollTmr(state) {
       return state.pollTmr
-    }
+    },
+    commPortList(state) {
+      return state.availablePorts;
+    },
+    portName(state) {
+      return state.portName
+    },
+    isCommPortOpen(state) {
+      if (state.portName !== '') {
+        return true
+      }
+      return false
+    },
   },
   actions: {
+    commitHeaterStatus(context, data) {
+      context.commit('CHANGE_FAN_RUNNING', data.fanRunning)
+      context.commit('CHANGE_FAN_POWER', data.fanPower)
+      context.commit('CHANGE_PUMP_RUNNING', data.pumpRunning)
+      context.commit('CHANGE_PUMP_FREQ', data.pumpFreq)
+      context.commit('PUSH_OUTLET_TEMPERATURE', data.outletTemp)
+      context.commit('PUSH_ROOM_TEMPERATURE', 0)   // FIXME
+      context.commit('CHANGE_GLOW_PLUG_ON', data.glowPlugOn)
+      context.commit('CHANGE_FLAME_DETECTED', data.flameDetected)
+      context.commit('CHANGE_STATE', data.state)
+    },
     pollStatus(context) {
-      Vue.axios.get('/api/v1/heater/status').then((response) => {
-        if (response.status !== 200) {
-          context.commit('CHANGE_COMM_STATUS', false)
-          return
-        }
-
-        context.commit('CHANGE_COMM_STATUS', true)
-        commitHeaterStatus(context, response.data)
-      })
-      .catch(function () {
-        //
-        // test code
-        //
-        /*
-        const o = Math.ceil(Math.random() * 300 - 100)
-        const r = Math.ceil(Math.random() * 300 - 100)
-        context.commit('PUSH_OUTLET_TEMPERATURE', o)
-        context.commit('PUSH_ROOM_TEMPERATURE', r)
-        */
-
-        context.commit('CHANGE_COMM_STATUS', false)
-      })
+/// #if RUN_TARGET == 'web'
+      context.dispatch('pollStatusWeb')
+/// #elif RUN_TARGET == 'electron'
+      context.dispatch('pollStatusCLI')
+/// #endif 
     },
     fanStart(context, { callback }) {
-      Vue.axios.post('/api/v1/heater/fan/start').then((response) => {
-        commitHeaterStatus(context, response.data)
-        callback()
-      })
-      .catch(function (err) {
-        callback(err)
-      })
+/// #if RUN_TARGET == 'web'
+      context.dispatch('fanStartWeb', { callback })
+/// #elif RUN_TARGET == 'electron'
+      // FIXME
+/// #endif 
     },
     fanStop(context, { callback }) {
-      Vue.axios.post('/api/v1/heater/fan/stop').then((response) => {
-        commitHeaterStatus(context, response.data)
-        callback()
-      })
-      .catch(function (err) {
-        callback(err)
-      })
+/// #if RUN_TARGET == 'web'
+      context.dispatch('fanStopWeb', { callback })
+/// #elif RUN_TARGET == 'electron'
+      // FIXME
+/// #endif 
     },
     fanPower(context, { power, callback }) {
-      Vue.axios.post('/api/v1/heater/fan/power', { power }).then((response) => {
-        commitHeaterStatus(context, response.data)
-        callback()
-      })
-      .catch(function (err) {
-        callback(err)
-      })
+/// #if RUN_TARGET == 'web'
+      context.dispatch('fanPowerWeb', { power, callback })
+/// #elif RUN_TARGET == 'electron'
+      // FIXME
+/// #endif 
     },
     pumpStart(context, { callback }) {
-      Vue.axios.post('/api/v1/heater/pump/start').then((response) => {
-        commitHeaterStatus(context, response.data)
-        callback()
-      })
-      .catch(function (err) {
-        callback(err)
-      })
+/// #if RUN_TARGET == 'web'
+      context.dispatch('pumpStartWeb', { callback })
+/// #elif RUN_TARGET == 'electron'
+      // FIXME
+/// #endif 
     },
     pumpStop(context, { callback }) {
-      Vue.axios.post('/api/v1/heater/pump/stop').then((response) => {
-        commitHeaterStatus(context, response.data)
-        callback()
-      })
-      .catch(function (err) {
-        callback(err)
-      })
+/// #if RUN_TARGET == 'web'
+      context.dispatch('pumpStopWeb', { callback })
+/// #elif RUN_TARGET == 'electron'
+      // FIXME
+/// #endif 
     },
     pumpFreq(context, { freq, callback }) {
-      Vue.axios.post('/api/v1/heater/pump/freq', { freq }).then((response) => {
-        commitHeaterStatus(context, response.data)
-        callback()
-      })
-      .catch(function (err) {
-        callback(err)
-      })
+/// #if RUN_TARGET == 'web'
+      context.dispatch('pumpFreqWeb', { freq, callback })
+/// #elif RUN_TARGET == 'electron'
+      // FIXME
+/// #endif 
     },
     glowOn(context, { callback }) {
-      Vue.axios.post('/api/v1/heater/glowplug/on').then((response) => {
-        commitHeaterStatus(context, response.data)
-        callback()
-      })
-      .catch(function (err) {
-        callback(err)
-      })
+/// #if RUN_TARGET == 'web'
+      context.dispatch('glowOnWeb', { callback })
+/// #elif RUN_TARGET == 'electron'
+      // FIXME
+/// #endif 
     },
     glowOff(context, { callback }) {
-      Vue.axios.post('/api/v1/heater/glowplug/off').then((response) => {
-        commitHeaterStatus(context, response.data)
-        callback()
-      })
-      .catch(function (err) {
-        callback(err)
-      })
+/// #if RUN_TARGET == 'web'
+      context.dispatch('glowOffWeb', { callback })
+/// #elif RUN_TARGET == 'electron'
+      // FIXME
+/// #endif 
     },
     heaterStart(context, { callback }) {
-      Vue.axios.post('/api/v1/heater/start').then((response) => {
-        commitHeaterStatus(context, response.data)
-        callback()
-      })
-      .catch(function (err) {
-        callback(err)
-      })
+/// #if RUN_TARGET == 'web'
+      context.dispatch('heaterStartWeb', { callback })
+/// #elif RUN_TARGET == 'electron'
+      // FIXME
+/// #endif 
     },
     heaterStop(context, { callback }) {
-      Vue.axios.post('/api/v1/heater/stop').then((response) => {
-        commitHeaterStatus(context, response.data)
-        callback()
-      })
-      .catch(function (err) {
-        callback(err)
-      })
+/// #if RUN_TARGET == 'web'
+      context.dispatch('heaterStopWeb', { callback })
+/// #elif RUN_TARGET == 'electron'
+      // FIXME
+/// #endif 
     },
     heaterSettingsGet(context, { callback }) {
-      Vue.axios.get('/api/v1/heater/settings')
-      .then((response) => {
-
-        if (response.status !== 200) {
-          callback(null,'status != 200')
-        } else {
-          callback(response.data)
-        }
-      })
-      .catch(function () {
-        callback(null, 'exception')
-      })
+/// #if RUN_TARGET == 'web'
+      context.dispatch('heaterSettingsGetWeb', { callback })
+/// #elif RUN_TARGET == 'electron'
+      // FIXME
+/// #endif 
     },
     heaterSettingChange(context, { ndx, value, callback }) {
-      Vue.axios.post('/api/v1/heater/settings/mod',
-        { ndx, value }
-      )
-      .then((response) => {
-
-        if (response.status !== 200) {
-          callback(null, 'status != 200')
-        }
-        callback(response.data)
-      })
-      .catch(function() {
-        callback(null, 'exception')
-      })
+/// #if RUN_TARGET == 'web'
+      context.dispatch('heaterSettingChangeWeb', { ndx, value, callback })
+/// #elif RUN_TARGET == 'electron'
+      // FIXME
+/// #endif 
     },
     heaterStepChange(context, { ndx, pwr, freq, callback }) {
-      Vue.axios.post('/api/v1/heater/settings/step',
-        { ndx, pwr, freq }
-      )
-      .then((response) => {
-
-        if (response.status !== 200) {
-          callback(null, 'status != 200')
-        }
-        callback(response.data)
-      })
-      .catch(function() {
-        callback(null, 'exception')
-      })
+/// #if RUN_TARGET == 'web'
+      context.dispatch('heaterStepChangeWeb', { ndx, pwr, freq, callback })
+/// #elif RUN_TARGET == 'electron'
+      // FIXME
+/// #endif 
     },
-    startPolling( { commit, dispatch } ) {
-      let polltmr
-
-      polltmr = setInterval(() => {
-        dispatch('pollStatus')
-      }, 1000)
-      commit('SET_POLL_TMR', polltmr)
+    startPolling(context) {
+/// #if RUN_TARGET == 'web'
+      context.dispatch('startPollingWeb', context)
+/// #elif RUN_TARGET == 'electron'
+      // FIXME
+/// #endif 
     },
   },
   modules: {
+    webAPI,
 /// #if RUN_TARGET == 'electron'
-    CLISerialPort,
+    cliAPI,
 /// #endif
   },
   strict: true

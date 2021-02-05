@@ -173,6 +173,10 @@
      v-model="settingsDialogOpen"
     />
 
+    <CommPortDialog
+     v-model="commPortDialogOpen"
+    />
+
     <v-snackbar v-model="snackbar">
       {{ snackbarMsg }}
 
@@ -202,6 +206,7 @@
   import HeaterDialog from './HeaterDialog'
   import LoaderDialog from './LoaderDialog'
   import SettingsDialog from './SettingsDialog'
+  import CommPortDialog from './CommPortDialog'
   import { mapGetters } from 'vuex'
 
   export default {
@@ -218,6 +223,7 @@
       HeaterDialog,
       LoaderDialog,
       SettingsDialog,
+      CommPortDialog,
     },
     data: () => ({
       glowPlugDialogOpen: false,
@@ -229,6 +235,7 @@
       snackbar: false,
       snackbarMsg: '',
       settingsDialogOpen: false,
+      commPortDialogOpen: false,
     }),
     methods: {
       //
@@ -405,9 +412,16 @@
       openSettingsDialog() {
         this.settingsDialogOpen = true
       },
+      openCommPortDialog() {
+/// #if RUN_TARGET == 'electron'
+        this.commPortDialogOpen = true
+/// #endif
+      },
     },
     mounted: function () {
+/// #if RUN_TARGET == 'web'
       this.$store.dispatch('startPolling')
+/// #endif
     },
     computed: {
       ...mapGetters([

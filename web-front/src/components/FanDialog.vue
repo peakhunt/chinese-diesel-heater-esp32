@@ -60,10 +60,6 @@
       },
     },
     methods: {
-      onStartClick() {
-      },
-      onStopClick() {
-      },
     },
     data: () => ({
       newFanPower: 0,

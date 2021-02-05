@@ -15,8 +15,9 @@
       <v-chip
        :color="commStatus ? 'success' : 'error'"
        elevation="4"
+       @click="$refs.heater.openCommPortDialog()"
        >
-        Comm {{ commStatus ? 'OK' : 'Fail' }}
+       {{ statusMsg }}
       </v-chip>
 
       <v-chip
@@ -35,7 +36,7 @@
 </template>
 
 <script>
-import Heater from './components/Heater';
+import Heater from './components/Heater'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -49,7 +50,21 @@ export default {
   computed: {
     ...mapGetters([
       'commStatus',
+/// #if RUN_TARGET == 'electron'
+      'portName',
+/// #endif
     ]),
+    statusMsg() {
+      /*eslint no-unreachable: "off"*/
+/// #if RUN_TARGET == 'electron'
+      if (this.portName !== '') {
+        return this.commStatus ? 'Comm OK' : 'Comm Fail'
+      }
+      return 'Not Open'
+/// #elif RUN_TARGET == 'web'
+      return this.commStatus ? 'Comm OK' : 'Comm Fail'
+/// #endif
+    },
   }
 };
 </script>
