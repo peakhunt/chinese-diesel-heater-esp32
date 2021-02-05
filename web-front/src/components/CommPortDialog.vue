@@ -117,6 +117,7 @@
               self.openFailed = true
               self.selectedPort = ''
             } else {
+              self.$store.dispatch('startPollingCLI')
               self.$emit('input', false)
             }
           }
