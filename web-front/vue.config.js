@@ -26,6 +26,9 @@ module.exports = {
   ],
   pluginOptions: {
     electronBuilder: {
+      builderOptions: {
+        buildDependenciesFromSource: true,
+      },
       nodeIntegration: true,
       externals: ["serialport"],
     },
