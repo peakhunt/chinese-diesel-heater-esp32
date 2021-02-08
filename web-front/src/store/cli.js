@@ -101,6 +101,89 @@ function parseStatus(lines) {
   return data
 }
 
+function parseSettings(lines) {
+  let data = {
+    s0: 0,
+    s1: 0,
+    s2: 0,
+    s3: 0,
+    s4: 0,
+    s5: 0,
+    s6: 0,
+    s7: 0,
+    s8: 0,
+    s9: 0,
+  }
+
+  lines.forEach((l) => {
+    var item = l.match(/^([0-9]+\.)/)
+    var v
+
+    if (item === null) {
+      item = l.match(/^(step [0-9])/)
+
+      if (item === null) {
+        return
+      }
+    }
+
+    switch(item[0]) {
+      case 's0':
+        data.s0 = parseInt(l.match(/0. glow plug on duration for start ([0-9]+) sec/)[1])
+        break
+
+      case 's1':
+        data.s1 = parseInt(l.match(/1. oil pump priming duratuin       ([0-9]+) sec/)[1])
+        break
+
+      case 's2':
+        data.s2 = parseInt(l.match(/2. glow plug on duration for stop  ([0-9]+) sec/)[1])
+        break
+
+      case 's3':
+        data.s3 = parseInt(l.match(/3. cooling down period             ([0-9]+) sec/)[1])
+        break
+
+      case 's4':
+        data.s4 = parseInt(l.match(/4. start-up fan power              ([0-9]+) %/)[1])
+        break
+
+      case 's5':
+        data.s5 = parseInt(l.match(/5. stop fan power                  ([0-9]+) %/)[1])
+        break
+
+      case 's6':
+        data.s6 = parseInt(l.match(/6. glow plug PWM frequency         ([0-9]+) Hz/)[1])
+        break
+
+      case 's7':
+        data.s7 = parseInt(l.match(/7. glow plug PWM duty              ([0-9]+) %/)[1])
+        break
+
+      case 's8':
+        data.s8 = parseFloat(l.match(/8. oil pump startup frequency      ([0-9]+\.[0-9]+) Hz/)[1])
+        break
+
+      case 's9':
+        data.s9 = parseInt(l.match(/9. oil pump pulse length           ([0-9]+) ms/)[1])
+        break
+
+      case 'step 0':
+      case 'step 1':
+      case 'step 2':
+      case 'step 3':
+      case 'step 4':
+        v = l.match(/step ([0-9]), oil pump freq ([0-9]+\.[0-9]+) Hz, Fan ([0-9]+)%/)
+        data.steps[parseInt(v[1])] = {
+          pump_freq: parseFloat(v[2]),
+          fan_power: parseInt(v[3]),
+        }
+        break
+    }
+    return data
+  })
+}
+
 function openCommPort( context, path, callback) {
   console.log('opening comm port')
 
@@ -328,6 +411,23 @@ export default {
         dispatch('pollStatusCLI')
       }, 1000)
       commit('SET_POLL_TMR', polltmr)
+    },
+    heaterSettingsGetCLI(context, { callback }) {
+      if (_cli === null) {
+        callback(null,'port not open')
+        return
+      }
+
+      _cli.command(`stop\r`, (lines, err) => {
+        if (err) {
+          callback(null, err)
+          return
+        }
+
+        let data = parseSettings(lines)
+
+        callback(data)
+      })
     },
   },
   strict: true
