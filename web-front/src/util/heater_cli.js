@@ -1,5 +1,8 @@
 const transaction_timeout = 500
-const cmd_prompt = 'Heater> '
+const cmd_prompt = [
+  'Heater> ',
+  'STM32F1> ',
+]
 
 function _executeNext(heater_cli) {
   heater_cli._timeout = null
@@ -60,14 +63,16 @@ HeaterCLI.prototype.open = function(callback) {
         //
         // if last line matches the prompt
         //
-        if (lines[lines.length - 1] === cmd_prompt) {
-          //
-          // got it
-          //
-          clearTimeout(heater_cli._timeout)
-          t.callback(lines)
-          _executeNext(heater_cli)
-        }
+        cmd_prompt.forEach((prompt) => {
+          if (lines[lines.length - 1] === prompt) {
+            //
+            // got it
+            //
+            clearTimeout(heater_cli._timeout)
+            t.callback(lines)
+            _executeNext(heater_cli)
+          }
+        })
       })
       callback()
     }
