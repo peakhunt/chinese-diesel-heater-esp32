@@ -278,28 +278,28 @@ export default new Vuex.Store({
 /// #if RUN_TARGET == 'web'
       context.dispatch('heaterSettingsGetWeb', { callback })
 /// #elif RUN_TARGET == 'electron'
-      // FIXME
+      context.dispatch('heaterSettingsGetCLI', { callback })
 /// #endif 
     },
     heaterSettingChange(context, { ndx, value, callback }) {
 /// #if RUN_TARGET == 'web'
       context.dispatch('heaterSettingChangeWeb', { ndx, value, callback })
 /// #elif RUN_TARGET == 'electron'
-      // FIXME
+      context.dispatch('heaterSettingChangeCLI', { ndx, value, callback })
 /// #endif 
     },
     heaterStepChange(context, { ndx, pwr, freq, callback }) {
 /// #if RUN_TARGET == 'web'
       context.dispatch('heaterStepChangeWeb', { ndx, pwr, freq, callback })
 /// #elif RUN_TARGET == 'electron'
-      // FIXME
+      context.dispatch('heaterStepChangeCLI', { ndx, pwr, freq, callback })
 /// #endif 
     },
     startPolling(context) {
 /// #if RUN_TARGET == 'web'
       context.dispatch('startPollingWeb', context)
 /// #elif RUN_TARGET == 'electron'
-      // FIXME
+      context.dispatch('startPollingCLI', context)
 /// #endif 
     },
     stopPolling(context) {

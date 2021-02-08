@@ -113,6 +113,7 @@ function parseSettings(lines) {
     s7: 0,
     s8: 0,
     s9: 0,
+    steps: [],
   }
 
   lines.forEach((l) => {
@@ -127,44 +128,45 @@ function parseSettings(lines) {
       }
     }
 
+    /*eslint no-regex-spaces: "off"*/
     switch(item[0]) {
-      case 's0':
-        data.s0 = parseInt(l.match(/0. glow plug on duration for start ([0-9]+) sec/)[1])
+      case '0.':
+        data.s0 = parseInt(l.match(/0. glow plug on duration for start ([0-9]+) sec/)[1]) * 1000
         break
 
-      case 's1':
-        data.s1 = parseInt(l.match(/1. oil pump priming duratuin       ([0-9]+) sec/)[1])
+      case '1.':
+        data.s1 = parseInt(l.match(/1. oil pump priming duratuin       ([0-9]+) sec/)[1]) * 1000
         break
 
-      case 's2':
-        data.s2 = parseInt(l.match(/2. glow plug on duration for stop  ([0-9]+) sec/)[1])
+      case '2.':
+        data.s2 = parseInt(l.match(/2. glow plug on duration for stop  ([0-9]+) sec/)[1]) * 1000
         break
 
-      case 's3':
-        data.s3 = parseInt(l.match(/3. cooling down period             ([0-9]+) sec/)[1])
+      case '3.':
+        data.s3 = parseInt(l.match(/3. cooling down period             ([0-9]+) sec/)[1]) * 1000
         break
 
-      case 's4':
+      case '4.':
         data.s4 = parseInt(l.match(/4. start-up fan power              ([0-9]+) %/)[1])
         break
 
-      case 's5':
+      case '5.':
         data.s5 = parseInt(l.match(/5. stop fan power                  ([0-9]+) %/)[1])
         break
 
-      case 's6':
+      case '6.':
         data.s6 = parseInt(l.match(/6. glow plug PWM frequency         ([0-9]+) Hz/)[1])
         break
 
-      case 's7':
+      case '7.':
         data.s7 = parseInt(l.match(/7. glow plug PWM duty              ([0-9]+) %/)[1])
         break
 
-      case 's8':
+      case '8.':
         data.s8 = parseFloat(l.match(/8. oil pump startup frequency      ([0-9]+\.[0-9]+) Hz/)[1])
         break
 
-      case 's9':
+      case '9.':
         data.s9 = parseInt(l.match(/9. oil pump pulse length           ([0-9]+) ms/)[1])
         break
 
@@ -176,12 +178,15 @@ function parseSettings(lines) {
         v = l.match(/step ([0-9]), oil pump freq ([0-9]+\.[0-9]+) Hz, Fan ([0-9]+)%/)
         data.steps[parseInt(v[1])] = {
           pump_freq: parseFloat(v[2]),
-          fan_power: parseInt(v[3]),
+          fan_pwr: parseInt(v[3]),
         }
         break
+
+      default:
+        console.log(`error : ${item}`)
     }
-    return data
   })
+  return data
 }
 
 function openCommPort( context, path, callback) {
@@ -418,7 +423,7 @@ export default {
         return
       }
 
-      _cli.command(`stop\r`, (lines, err) => {
+      _cli.command(`settings\r`, (lines, err) => {
         if (err) {
           callback(null, err)
           return
@@ -427,6 +432,40 @@ export default {
         let data = parseSettings(lines)
 
         callback(data)
+      })
+    },
+    heaterSettingChangeCLI(context, { ndx, value, callback }) {
+      if (_cli === null) {
+        callback(null,'port not open')
+        return
+      }
+
+      if (ndx >= 0 && ndx <= 3) {
+        value  = value / 1000
+      }
+
+      _cli.command(`mod ${ndx} ${value}\r`, (ignored, err) => {
+        if (err) {
+          callback(null, err)
+          return
+        }
+
+        context.dispatch('heaterSettingsGetCLI', { callback })
+      })
+    },
+    heaterStepChangeCLI(context, { ndx, pwr, freq, callback }) {
+      if (_cli === null) {
+        callback(null,'port not open')
+        return
+      }
+
+      _cli.command(`step ${ndx} ${freq} ${pwr}\r`, (ignored, err) => {
+        if (err) {
+          callback(null, err)
+          return
+        }
+
+        context.dispatch('heaterSettingsGetCLI', { callback })
       })
     },
   },
