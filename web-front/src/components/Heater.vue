@@ -2,7 +2,7 @@
   <v-container fluid>
     <v-row class="text-center">
       <v-col
-       cols="8"
+       :cols="heaterColumnWidth"
        class="d-flex"
        style="flex-direction:column"
       >
@@ -75,64 +75,52 @@
       </v-col>
 
       <v-col
-       cols="4"
+       v-if="rightPanelColumnWidth === 4"
+       :cols="rightPanelColumnWidth"
        class="d-flex"
        style="flex-direction:column"
       >
         <v-row class="ma-0">
-          <v-card outlined tile elevation="10" class="ma-2 flex-grow-1">
-            <v-card-title>
-              <v-row aligh="start">
-                <div class="caption grey--text text-uppercase">
-                  Outlet Temperature
-                </div>
-                <div>
-                  <span class="display-2 font-weight-black" v-text="outletTemp.toFixed(1)" />
-                  <strong>{{tempUnit}}</strong>
-                </div>
-              </v-row>
-            </v-card-title>
-
-            <v-sheet color="transparent">
-              <v-sparkline
-               :smooth="16"
-               :gradient="['#f72047', '#ffd200', '#1feaea']"
-               :line-width="1"
-               :value="outletTempTrends"
-               auto-draw
-               stroke-linecap="round"
-              >
-              </v-sparkline>
-            </v-sheet>
-          </v-card>
+          <TempChart class="ma-2 flex-grow-1"
+           title="Outlet Temperature"
+           :unit="tempUnit"
+           :value="outletTemp"
+           :trend="outletTempTrends"
+          />
         </v-row>
 
         <v-row class="ma-0">
-          <v-card outlined tile elevation="10" class="ma-2 flex-grow-1">
-            <v-card-title>
-              <v-row aligh="start">
-                <div class="caption grey--text text-uppercase">
-                  Room Temperature
-                </div>
-                <div>
-                  <span class="display-2 font-weight-black" v-text="roomTemp.toFixed(1)" />
-                  <strong>{{tempUnit}}</strong>
-                </div>
-              </v-row>
-            </v-card-title>
+          <TempChart class="ma-2 flex-grow-1"
+           title="Room Temperature"
+           :unit="tempUnit"
+           :value="roomTemp"
+           :trend="roomTempTrends"
+          />
+        </v-row>
+      </v-col>
 
-            <v-sheet color="transparent">
-              <v-sparkline
-               :smooth="16"
-               :gradient="['#f72047', '#ffd200', '#1feaea']"
-               :line-width="1"
-               :value="roomTempTrends"
-               auto-draw
-               stroke-linecap="round"
-              >
-              </v-sparkline>
-            </v-sheet>
-          </v-card>
+      <v-col
+       v-if="rightPanelColumnWidth === 12"
+       class="ma-0"
+      >
+        <v-row dense class="ma-1">
+          <v-col cols="6" class="ma-0">
+            <TempChart class="ma-0" style="height: 400"
+             title="Outlet Temperature"
+             :unit="tempUnit"
+             :value="outletTemp"
+             :trend="outletTempTrends"
+            />
+          </v-col>
+
+          <v-col cols="6" class="ma-0" style="height: 400">
+            <TempChart class="ma-0"
+             title="Room Temperature"
+             :unit="tempUnit"
+             :value="roomTemp"
+             :trend="roomTempTrends"
+            />
+          </v-col>
         </v-row>
       </v-col>
     </v-row>
@@ -207,6 +195,7 @@
   import LoaderDialog from './LoaderDialog'
   import SettingsDialog from './SettingsDialog'
   import CommPortDialog from './CommPortDialog'
+  import TempChart from './TempChart'
   import { mapGetters } from 'vuex'
 
   export default {
@@ -224,6 +213,7 @@
       LoaderDialog,
       SettingsDialog,
       CommPortDialog,
+      TempChart,
     },
     data: () => ({
       glowPlugDialogOpen: false,
@@ -438,6 +428,32 @@
         'roomTempTrends',
         'tempUnit',
       ]),
+      heaterColumnWidth() {
+        switch (this.$vuetify.breakpoint.name) {
+          case 'xs':
+          case 'sm':
+            return 12
+
+          case 'md':
+          case 'ld':
+          case 'xl':
+            break;
+        }
+        return 8
+      },
+      rightPanelColumnWidth() {
+        switch (this.$vuetify.breakpoint.name) {
+          case 'xs':
+          case 'sm':
+            return 12
+
+          case 'md':
+          case 'ld':
+          case 'xl':
+            break;
+        }
+        return 4
+      },
     },
   }
 </script>
