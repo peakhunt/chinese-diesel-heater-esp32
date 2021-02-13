@@ -30,7 +30,7 @@ typedef struct
   SoftTimerElem       tmr2;
 } fan_t;
 
-extern void fan_init(fan_t* fan, pwm_channel_t chnl, gpio_in_pin_t hall_input, gpio_out_pin_t enable);
+extern void fan_init(fan_t* fan, pwm_channel_t chnl, gpio_in_pin_t hall_input);
 extern void fan_start(fan_t* fan);
 extern void fan_stop(fan_t* fan);
 extern void fan_set_power(fan_t* fan, uint8_t pwr);

@@ -64,7 +64,7 @@ fan_motor_hall_input_callback(gpio_in_pin_t pin, gpio_input_state_t state, void*
 }
 
 void
-fan_init(fan_t* fan, pwm_channel_t chnl, gpio_in_pin_t hall_input, gpio_out_pin_t enable)
+fan_init(fan_t* fan, pwm_channel_t chnl, gpio_in_pin_t hall_input)
 {
   fan->on = false;
   fan->pwm_chnl = chnl;
@@ -85,17 +85,6 @@ fan_init(fan_t* fan, pwm_channel_t chnl, gpio_in_pin_t hall_input, gpio_out_pin_
 
   gpio_set_debounce(fan->hall_input, false);
   gpio_listen(fan->hall_input,  fan_motor_hall_input_callback, fan);
-
-  //
-  // just enable motor controller and don't care about it
-  // ESP32 has 3.3V IO. Most DC motor drivers use 5V system
-  // So I'm using a simple level converter using BSS138 mosfet
-  // problem with this approach is there could be a short
-  // PWM on signal with 100% duty cycle sent out during system boot.
-  // To prevent this unwanted situation, motor controller enable signal
-  // is pulled down and later enabled when PWM signal is stable and ready.
-  //
-  gpio_set(enable, true);
 }
 
 void
