@@ -7,7 +7,7 @@
       dark
     >
       <v-toolbar-title>
-        Chinese Diesel Heater
+        中国柴油加热器
       </v-toolbar-title>
 
       <v-spacer></v-spacer>
