@@ -450,7 +450,13 @@ export default {
           return
         }
 
-        context.dispatch('heaterSettingsGetCLI', { callback })
+        _cli.command(`save\r`, (ignored, err) => {
+          if (err) {
+            callback(null, err)
+            return
+          }
+          context.dispatch('heaterSettingsGetCLI', { callback })
+        })
       })
     },
     heaterStepChangeCLI(context, { ndx, pwr, freq, callback }) {
@@ -465,7 +471,13 @@ export default {
           return
         }
 
-        context.dispatch('heaterSettingsGetCLI', { callback })
+        _cli.command(`save\r`, (ignored, err) => {
+          if (err) {
+            callback(null, err)
+            return
+          }
+          context.dispatch('heaterSettingsGetCLI', { callback })
+        })
       })
     },
   },
