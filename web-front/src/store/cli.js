@@ -25,6 +25,7 @@ function parseStatus(lines) {
     pumpRunning: 0,
     pumpFreq: 0,
     outletTemp: 0,
+    roomTemp: 0,
     glowPlugOn: 0,
     flameDetected: false,
     state: 0,
@@ -94,6 +95,10 @@ function parseStatus(lines) {
 
       case 'outlet':
         data.outletTemp = parseFloat(values[0])
+        break
+
+      case 'room':
+        data.roomTemp = parseFloat(values[0])
         break
     }
   })

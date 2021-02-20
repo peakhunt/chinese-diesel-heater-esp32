@@ -192,7 +192,7 @@ export default new Vuex.Store({
       context.commit('CHANGE_PUMP_RUNNING', data.pumpRunning)
       context.commit('CHANGE_PUMP_FREQ', data.pumpFreq)
       context.commit('PUSH_OUTLET_TEMPERATURE', data.outletTemp)
-      context.commit('PUSH_ROOM_TEMPERATURE', 0)   // FIXME
+      context.commit('PUSH_ROOM_TEMPERATURE', data.roomTemp)
       context.commit('CHANGE_GLOW_PLUG_ON', data.glowPlugOn)
       context.commit('CHANGE_FLAME_DETECTED', data.flameDetected)
       context.commit('CHANGE_STATE', data.state)
