@@ -32,6 +32,7 @@ typedef struct
   oil_pump_t        oil_pump;
   fan_t             fan;
   ntc50_t           outlet_temp;
+  ntc50_t           room_temp;
   uint8_t           step;
 } heater_t;
 

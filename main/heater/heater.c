@@ -225,6 +225,8 @@ heater_init(void)
   // 3.3V source. 51K R2 in voltage divider circuit
   //
   ntc50_init(&_heater.outlet_temp, 3.3, 51 * 1000.0f, adc_channel_map_0);
+  ntc50_init(&_heater.room_temp, 3.3, 51 * 1000.0f, adc_channel_map_1);
+
   soft_timer_init_elem(&_tmr);
   _tmr.cb = heater_timer_callback;
 }
