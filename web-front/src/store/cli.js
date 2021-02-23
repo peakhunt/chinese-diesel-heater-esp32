@@ -25,6 +25,7 @@ function parseStatus(lines) {
     pumpRunning: 0,
     pumpFreq: 0,
     outletTemp: 0,
+    roomTemp: 0,
     glowPlugOn: 0,
     flameDetected: false,
     state: 0,
@@ -94,6 +95,10 @@ function parseStatus(lines) {
 
       case 'outlet':
         data.outletTemp = parseFloat(values[0])
+        break
+
+      case 'room':
+        data.roomTemp = parseFloat(values[0])
         break
     }
   })
@@ -450,7 +455,13 @@ export default {
           return
         }
 
-        context.dispatch('heaterSettingsGetCLI', { callback })
+        _cli.command(`save\r`, (ignored, err) => {
+          if (err) {
+            callback(null, err)
+            return
+          }
+          context.dispatch('heaterSettingsGetCLI', { callback })
+        })
       })
     },
     heaterStepChangeCLI(context, { ndx, pwr, freq, callback }) {
@@ -465,7 +476,13 @@ export default {
           return
         }
 
-        context.dispatch('heaterSettingsGetCLI', { callback })
+        _cli.command(`save\r`, (ignored, err) => {
+          if (err) {
+            callback(null, err)
+            return
+          }
+          context.dispatch('heaterSettingsGetCLI', { callback })
+        })
       })
     },
   },
