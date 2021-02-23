@@ -208,6 +208,7 @@ heater_get_common_json_status(void)
   cJSON_AddBoolToObject(root, "flameDetected", r.flame_detected);
   cJSON_AddBoolToObject(root, "glowPlugOn", r.glow_on);
   cJSON_AddNumberToObject(root, "outletTemp", r.outlet_temp);
+  cJSON_AddNumberToObject(root, "roomTemp", r.room_temp);
   cJSON_AddNumberToObject(root, "pumpFreq", r.oil_freq);
   cJSON_AddBoolToObject(root, "pumpRunning", r.oil_on);
 

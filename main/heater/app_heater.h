@@ -82,6 +82,7 @@ typedef struct
   uint8_t               step;
   float                 oil_freq;
   float                 outlet_temp;
+  float                 room_temp;
 } app_heater_status_rsp_t;
 
 typedef struct

@@ -521,6 +521,7 @@ cli_command_status(cli_intf_t* intf, int argc, const char** argv)
 	cli_printf(intf, "step  : %d"CLI_EOL, r.step);
 
   cli_printf(intf, "outlet : %.1f C"CLI_EOL, r.outlet_temp);
+  cli_printf(intf, "room   : %.1f C"CLI_EOL, r.room_temp);
 }
 
 static void
