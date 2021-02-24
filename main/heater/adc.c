@@ -40,6 +40,13 @@ adc_sampling_tmr_callback(SoftTimerElem* te)
   case adc_channel_map_1:
     chnl = ADC_CHANNEL_7;
     break;
+
+  case adc_channel_map_2:
+    chnl = ADC_CHANNEL_4;
+    break;
+  case adc_channel_map_3:
+    chnl = ADC_CHANNEL_5;
+    break;
   }
 
   _samples[_current_chnl].sample = adc1_get_raw((adc1_channel_t)chnl);
@@ -73,6 +80,8 @@ adc_init(void)
 
   adc1_config_channel_atten(ADC_CHANNEL_6, ADC_ATTEN_DB_0);
   adc1_config_channel_atten(ADC_CHANNEL_7, ADC_ATTEN_DB_0);
+  adc1_config_channel_atten(ADC_CHANNEL_4, ADC_ATTEN_DB_0);
+  adc1_config_channel_atten(ADC_CHANNEL_5, ADC_ATTEN_DB_0);
 
   for(uint8_t i = 0; i < ADC_MAX_CHANNELS; i++)
   {

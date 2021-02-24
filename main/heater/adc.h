@@ -7,8 +7,10 @@ typedef enum
 {
   adc_channel_map_0,        // PIN34, ADC1_CH6
   adc_channel_map_1,        // PIN35, ADC1_CH7
+  adc_channel_map_2,        // PIN32, ADC1_CH4
+  adc_channel_map_3,        // PIN33, ADC1_CH5
 } adc_channel_map_t;
-#define ADC_MAX_CHANNELS    (adc_channel_map_1 + 1)
+#define ADC_MAX_CHANNELS    (adc_channel_map_3 + 1)
 
 typedef uint16_t adcsample_t;
 
