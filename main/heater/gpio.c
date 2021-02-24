@@ -192,6 +192,11 @@ init_input_pins(void)
   gpio_isr_handler_add(GPIO_PIN25, gpio_isr_handler, (void*) GPIO_PIN25);
   gpio_isr_handler_add(GPIO_PIN26, gpio_isr_handler, (void*) GPIO_PIN26);
   gpio_isr_handler_add(GPIO_PIN27, gpio_isr_handler, (void*) GPIO_PIN27);
+
+  //
+  // FIXME
+  // how to route button event to display task???
+  //
 }
 
 void
