@@ -18,6 +18,11 @@
 #define GPIO_PIN26          GPIO_NUM_26
 #define GPIO_PIN27          GPIO_NUM_27
 
+#define GPIO_PIN13          GPIO_NUM_13
+#define GPIO_PIN12          GPIO_NUM_12
+#define GPIO_PIN14          GPIO_NUM_14
+#define GPIO_PIN2           GPIO_NUM_2
+
 
 typedef struct
 {
@@ -45,6 +50,26 @@ static gpio_input_t   _inputs[GPIO_MAX_INPUT] =
   {
     .pin_name = gpio_in_pin_27,
     .pin = GPIO_PIN27,
+    .use_debounce = true,
+  },
+  {
+    .pin_name = gpio_in_pin_13,
+    .pin = GPIO_PIN13,
+    .use_debounce = true,
+  },
+  {
+    .pin_name = gpio_in_pin_12,
+    .pin = GPIO_PIN12,
+    .use_debounce = true,
+  },
+  {
+    .pin_name = gpio_in_pin_14,
+    .pin = GPIO_PIN14,
+    .use_debounce = true,
+  },
+  {
+    .pin_name = gpio_in_pin_2,
+    .pin = GPIO_PIN2,
     .use_debounce = true,
   },
 };
@@ -170,7 +195,11 @@ init_input_pins(void)
   io_conf.intr_type     = GPIO_PIN_INTR_ANYEDGE;
   io_conf.pin_bit_mask  = (1ULL << GPIO_PIN25) |
                           (1ULL << GPIO_PIN26) |
-                          (1ULL << GPIO_PIN27);
+                          (1ULL << GPIO_PIN27) |
+                          (1ULL << GPIO_PIN13) |
+                          (1ULL << GPIO_PIN12) |
+                          (1ULL << GPIO_PIN14) |
+                          (1ULL << GPIO_PIN2);
   io_conf.mode          = GPIO_MODE_INPUT;
   io_conf.pull_down_en  = 1;
   io_conf.pull_up_en    = 0;
@@ -192,6 +221,11 @@ init_input_pins(void)
   gpio_isr_handler_add(GPIO_PIN25, gpio_isr_handler, (void*) GPIO_PIN25);
   gpio_isr_handler_add(GPIO_PIN26, gpio_isr_handler, (void*) GPIO_PIN26);
   gpio_isr_handler_add(GPIO_PIN27, gpio_isr_handler, (void*) GPIO_PIN27);
+
+  gpio_isr_handler_add(GPIO_PIN13, gpio_isr_handler, (void*) GPIO_PIN13);
+  gpio_isr_handler_add(GPIO_PIN12, gpio_isr_handler, (void*) GPIO_PIN12);
+  gpio_isr_handler_add(GPIO_PIN14, gpio_isr_handler, (void*) GPIO_PIN14);
+  gpio_isr_handler_add(GPIO_PIN2,  gpio_isr_handler, (void*) GPIO_PIN2);
 
   //
   // FIXME

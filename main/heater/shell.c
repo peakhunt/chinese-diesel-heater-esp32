@@ -5,17 +5,14 @@
 #include "shell.h"
 #include "io_driver.h"
 #include "esp_log.h"
-
 #include "app_wifi.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-
 #include "cli.h"
-
 #include "esp_system.h"
 #include "esp_spi_flash.h"
-
 #include "app_heater.h"
+#include "utilities.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -161,34 +158,6 @@ static cli_command_t    _app_commands[] =
     cli_command_set,
   },
 };
-
-static inline int
-fcompare(float a, float b)
-{
-  //
-  // returns -1 when a < b
-  //          1 when a > b
-  //          0 when equal
-  //
-#define FLT_EPSILON 0.000001f
-
-  float d = a - b;
-
-  if (d >= -FLT_EPSILON && d <= FLT_EPSILON)
-  {
-    return 0;
-  }
-
-  if(d < -FLT_EPSILON)
-  {
-    // a is less than b
-    return -1;
-  }
-
-  // a is bigger than b
-  return 1;
-}
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //

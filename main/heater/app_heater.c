@@ -16,6 +16,8 @@
 #include "mainloop_timer.h"
 #include "misc.h"
 
+#include "display.h"
+
 static const char* TAG = "heater";
 static TimerHandle_t      _tick_tmr;
 static QueueHandle_t      _heater_q;
@@ -285,6 +287,8 @@ app_heater_handle_cmd(app_heater_msg_t* m)
 static void
 app_heater_task(void* pvParameters)
 {
+  ESP_LOGI(TAG, "starting heater task");
+
   _heater_q = xQueueCreate(16, sizeof(app_heater_msg_t));
 
   _rsp_q_mutex = xSemaphoreCreateMutex();
@@ -307,6 +311,8 @@ app_heater_task(void* pvParameters)
   adc_init();
   heater_init();
   misc_init();
+
+  display_init();
 
   xTimerStart(_tick_tmr, 0);
 
@@ -332,8 +338,6 @@ app_heater_task(void* pvParameters)
 void
 app_heater_init(void)
 {
-  ESP_LOGI(TAG, "starting heater task");
-
   xTaskCreate(app_heater_task, "heater_task", 4096, NULL, 7, NULL);
   shell_init();
 }

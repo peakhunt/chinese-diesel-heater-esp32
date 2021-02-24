@@ -17,6 +17,9 @@ idf_component_register(SRCS "app_main.c"
                             "heater/oil_pump.c"
                             "heater/ntc50.c"
                             "heater/heater.c"
+                            "display/display.c"
+                            "display/ssd1306.c"
+                            "display/ssd1306_fonts.c"
                             "utils/soft_timer.c"
                             "utils/io_driver.c"
                             "utils/io_driver_notifier.c"
@@ -30,6 +33,7 @@ idf_component_register(SRCS "app_main.c"
                             "utils/cli_telnet.c"
                     INCLUDE_DIRS "."
                                  "heater"
+                                 "display"
                                  "utils")
 
 set(WEB_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../web-front")

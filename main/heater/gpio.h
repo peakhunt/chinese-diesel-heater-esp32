@@ -17,15 +17,13 @@ typedef enum
   gpio_in_pin_26,
   gpio_in_pin_27,
 
-  // FIXME
-#if 0
   gpio_in_pin_13,   // BTN0
   gpio_in_pin_12,   // BTN1
   gpio_in_pin_14,   // BTN2
   gpio_in_pin_2,    // BTN3
-#endif
+
 } gpio_in_pin_t;
-#define GPIO_MAX_INPUT    (gpio_in_pin_27 + 1)
+#define GPIO_MAX_INPUT    (gpio_in_pin_2 + 1)
 
 typedef enum
 {
