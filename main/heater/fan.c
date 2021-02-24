@@ -85,6 +85,11 @@ fan_init(fan_t* fan, pwm_channel_t chnl, gpio_in_pin_t hall_input)
 
   gpio_set_debounce(fan->hall_input, false);
   gpio_listen(fan->hall_input,  fan_motor_hall_input_callback, fan);
+
+  //
+  // enable M_INA
+  //
+  gpio_set(gpio_out_pin_19, true);
 }
 
 void
