@@ -11,6 +11,7 @@
 #include "app_heater.h"
 #include "version.h"
 #include "utilities.h"
+#include "display.h"
 
 typedef enum
 {
@@ -89,6 +90,8 @@ static const char*  _dialog_msg = NULL;
 static bool         _dialog_sel = false;
 static display_mode_t   _prev_mode;
 static app_heater_status_rsp_t    _r;
+
+static QueueHandle_t      _event_q;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -495,14 +498,19 @@ display_task(void* pvParameters)
   ssd1306_init();
 
   display_refresh();
+  vTaskDelay(WELCOME_INTERVAL / portTICK_RATE_MS);
+  display_switch(display_mode_status);
 
   while(1)
   {
-    //
-    // FIXME
-    // implement button event/refresh timer mechanism
-    //
-    vTaskDelay(1000 / portTICK_RATE_MS);
+    display_event_t   evt;
+
+    if(xQueueReceive(_event_q, (void*)&evt, STATUS_UPDATE_INTERVAL / portTICK_RATE_MS) == pdTRUE)
+    {
+      // FIXME
+      // handle event
+    }
+
     display_refresh();
     (void)_input_handlers;
   }
@@ -511,5 +519,12 @@ display_task(void* pvParameters)
 void
 display_init(void)
 {
+  _event_q = xQueueCreate(8, sizeof(display_event_t));
   xTaskCreate(display_task, "display", 4096, NULL, 3, NULL);
+}
+
+void
+display_feed_event(display_event_t e)
+{
+  xQueueSend(_event_q, (void*)&e, portMAX_DELAY);
 }

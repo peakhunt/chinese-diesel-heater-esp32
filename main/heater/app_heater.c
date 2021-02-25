@@ -289,10 +289,12 @@ app_heater_task(void* pvParameters)
 {
   ESP_LOGI(TAG, "starting heater task");
 
+#if 0
   _heater_q = xQueueCreate(16, sizeof(app_heater_msg_t));
 
   _rsp_q_mutex = xSemaphoreCreateMutex();
   _rsp_q    = xQueueCreate(1, sizeof(bool));
+#endif
 
   _tick_tmr = xTimerCreate
     (
@@ -338,6 +340,11 @@ app_heater_task(void* pvParameters)
 void
 app_heater_init(void)
 {
+  _heater_q = xQueueCreate(16, sizeof(app_heater_msg_t));
+
+  _rsp_q_mutex = xSemaphoreCreateMutex();
+  _rsp_q    = xQueueCreate(1, sizeof(bool));
+
   xTaskCreate(app_heater_task, "heater_task", 4096, NULL, 7, NULL);
   shell_init();
 }

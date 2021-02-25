@@ -195,14 +195,20 @@ init_input_pins(void)
   io_conf.intr_type     = GPIO_PIN_INTR_ANYEDGE;
   io_conf.pin_bit_mask  = (1ULL << GPIO_PIN25) |
                           (1ULL << GPIO_PIN26) |
-                          (1ULL << GPIO_PIN27) |
-                          (1ULL << GPIO_PIN13) |
+                          (1ULL << GPIO_PIN27);
+  io_conf.mode          = GPIO_MODE_INPUT;
+  io_conf.pull_down_en  = 1;
+  io_conf.pull_up_en    = 0;
+  gpio_config(&io_conf);
+
+  io_conf.intr_type     = GPIO_PIN_INTR_ANYEDGE;
+  io_conf.pin_bit_mask  = (1ULL << GPIO_PIN13) |
                           (1ULL << GPIO_PIN12) |
                           (1ULL << GPIO_PIN14) |
                           (1ULL << GPIO_PIN2);
   io_conf.mode          = GPIO_MODE_INPUT;
-  io_conf.pull_down_en  = 1;
-  io_conf.pull_up_en    = 0;
+  io_conf.pull_down_en  = 0;
+  io_conf.pull_up_en    = 1;
   gpio_config(&io_conf);
 
   for(uint8_t i = 0; i < GPIO_MAX_INPUT; i++)
