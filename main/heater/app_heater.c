@@ -385,7 +385,7 @@ app_heater_init(void)
   _rsp_q_mutex = xSemaphoreCreateMutex();
   _rsp_q    = xQueueCreate(1, sizeof(bool));
 
-  xTaskCreate(app_heater_task, "heater_task", 4096, NULL, 7, NULL);
+  xTaskCreate(app_heater_task, "heater_task", 4096, NULL, configMAX_PRIORITIES - 1, NULL);
   shell_init();
 }
 
