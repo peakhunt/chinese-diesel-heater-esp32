@@ -85,6 +85,8 @@ static app_heater_status_rsp_t    _r;
 
 static QueueHandle_t      _event_q;
 
+static bool         _refreshed = false;
+
 /////////////////////////////////////////////////////////////////////////////////////////
 //
 // welcome state
@@ -468,6 +470,8 @@ display_refresh(void)
   _display_handlers[_mode]();
 
   ssd1306_update_screen();
+
+  _refreshed = true;
 }
 
 static void
@@ -497,16 +501,21 @@ display_task(void* pvParameters)
   {
     display_input_t   evt;
 
+    _refreshed = false;
+
     if(xQueueReceive(_event_q, (void*)&evt, STATUS_UPDATE_INTERVAL / portTICK_RATE_MS) == pdTRUE)
     {
       _input_handlers[_mode](evt);
     }
-    else
+
+    //
+    // 1. in dialog mode, no need for a periodic refresh
+    // 2. for periodic refresh, this is not exactly at STATUS_UPDATE_INTERVAL
+    //    if button event occurs but who cares
+    //
+    if(_mode != display_mode_dialog && !_refreshed)
     {
-      if(_mode != display_mode_dialog)
-      {
-        display_refresh();
-      }
+      display_refresh();
     }
   }
 }
