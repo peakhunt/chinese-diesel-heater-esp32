@@ -12054,11 +12054,11 @@ Wire Wire Line
 Wire Wire Line
 	4050 5000 4800 5000
 Text Label 4450 5000 0    50   ~ 0
-5V
+EN
 Wire Wire Line
 	4050 5450 4050 5700
 Wire Wire Line
 	4050 5700 4800 5700
 Text Label 4350 5700 0    50   ~ 0
-EN
+GND
 $EndSCHEMATC

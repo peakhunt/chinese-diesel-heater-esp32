@@ -2,7 +2,7 @@
 <export version="D">
   <design>
     <source>/home/hawk/sandbox/chinese-diesel-heater-esp32/pcb/diesel-heater-esp32.sch</source>
-    <date>Thu 25 Feb 2021 07:45:32 PM KST</date>
+    <date>Thu 25 Feb 2021 08:02:21 PM KST</date>
     <tool>Eeschema 5.1.9-73d0e3b20d~88~ubuntu18.04.1</tool>
     <sheet number="1" name="/" tstamps="/">
       <title_block>
@@ -372,42 +372,43 @@
   </libraries>
   <nets>
     <net code="1" name="/3V3">
+      <node ref="J6" pin="1"/>
       <node ref="J7" pin="1"/>
       <node ref="R3" pin="2"/>
       <node ref="J9" pin="1"/>
-      <node ref="J10" pin="1"/>
-      <node ref="J3" pin="1"/>
-      <node ref="R1" pin="2"/>
       <node ref="R2" pin="2"/>
-      <node ref="J6" pin="1"/>
-      <node ref="R4" pin="2"/>
+      <node ref="J10" pin="1"/>
+      <node ref="R1" pin="2"/>
+      <node ref="J3" pin="1"/>
+      <node ref="R8" pin="1"/>
       <node ref="J8" pin="1"/>
       <node ref="R7" pin="1"/>
-      <node ref="R8" pin="1"/>
+      <node ref="R4" pin="2"/>
     </net>
     <net code="2" name="GND">
       <node ref="R14" pin="2"/>
       <node ref="R10" pin="2"/>
       <node ref="R11" pin="2"/>
-      <node ref="J10" pin="2"/>
-      <node ref="J1" pin="2"/>
       <node ref="J3" pin="2"/>
+      <node ref="J1" pin="2"/>
+      <node ref="J10" pin="2"/>
+      <node ref="C1" pin="2"/>
       <node ref="J2" pin="2"/>
+      <node ref="J5" pin="2"/>
       <node ref="J10" pin="4"/>
       <node ref="J11" pin="2"/>
+      <node ref="R13" pin="2"/>
       <node ref="J12" pin="2"/>
       <node ref="R12" pin="2"/>
-      <node ref="R13" pin="2"/>
-      <node ref="J5" pin="2"/>
       <node ref="J4" pin="1"/>
-      <node ref="R6" pin="2"/>
       <node ref="R9" pin="2"/>
       <node ref="J7" pin="2"/>
+      <node ref="R6" pin="2"/>
     </net>
     <net code="3" name="/SDA">
+      <node ref="R8" pin="2"/>
       <node ref="J7" pin="3"/>
       <node ref="J6" pin="11"/>
-      <node ref="R8" pin="2"/>
     </net>
     <net code="4" name="/SCL">
       <node ref="R7" pin="2"/>
@@ -416,13 +417,13 @@
     </net>
     <net code="5" name="/BTN1">
       <node ref="J4" pin="3"/>
-      <node ref="R2" pin="1"/>
       <node ref="J2" pin="4"/>
+      <node ref="R2" pin="1"/>
     </net>
     <net code="6" name="/BTN3">
       <node ref="J4" pin="5"/>
-      <node ref="J6" pin="5"/>
       <node ref="R4" pin="1"/>
+      <node ref="J6" pin="5"/>
     </net>
     <net code="7" name="/BTN0">
       <node ref="J2" pin="3"/>
@@ -430,8 +431,8 @@
       <node ref="R1" pin="1"/>
     </net>
     <net code="8" name="/GP_SIG">
-      <node ref="J11" pin="1"/>
       <node ref="R12" pin="1"/>
+      <node ref="J11" pin="1"/>
       <node ref="J6" pin="8"/>
     </net>
     <net code="9" name="/OP_SIG">
@@ -455,8 +456,8 @@
       <node ref="J2" pin="7"/>
     </net>
     <net code="15" name="/M_RUN">
-      <node ref="J3" pin="3"/>
       <node ref="J2" pin="8"/>
+      <node ref="J3" pin="3"/>
     </net>
     <net code="16" name="/M_INA">
       <node ref="J6" pin="10"/>
@@ -472,35 +473,34 @@
       <node ref="R14" pin="1"/>
     </net>
     <net code="19" name="/EN">
-      <node ref="J2" pin="15"/>
-      <node ref="C1" pin="2"/>
-    </net>
-    <net code="20" name="/5V">
-      <node ref="J2" pin="1"/>
       <node ref="C1" pin="1"/>
-      <node ref="J1" pin="1"/>
+      <node ref="J2" pin="15"/>
     </net>
-    <net code="21" name="Net-(J6-Pad2)">
+    <net code="20" name="Net-(J6-Pad2)">
       <node ref="J6" pin="2"/>
     </net>
-    <net code="22" name="Net-(J6-Pad4)">
+    <net code="21" name="Net-(J6-Pad4)">
       <node ref="J6" pin="4"/>
     </net>
-    <net code="23" name="Net-(J6-Pad15)">
+    <net code="22" name="Net-(J6-Pad15)">
       <node ref="J6" pin="15"/>
     </net>
-    <net code="24" name="/BTN2">
+    <net code="23" name="/BTN2">
       <node ref="J2" pin="5"/>
-      <node ref="R3" pin="1"/>
       <node ref="J4" pin="4"/>
+      <node ref="R3" pin="1"/>
+    </net>
+    <net code="24" name="/5V">
+      <node ref="J1" pin="1"/>
+      <node ref="J2" pin="1"/>
     </net>
     <net code="25" name="Net-(J2-Pad13)">
       <node ref="J2" pin="13"/>
     </net>
     <net code="26" name="/OT">
+      <node ref="J2" pin="12"/>
       <node ref="J9" pin="2"/>
       <node ref="R10" pin="1"/>
-      <node ref="J2" pin="12"/>
     </net>
     <net code="27" name="/RT">
       <node ref="R9" pin="1"/>
@@ -508,9 +508,9 @@
       <node ref="J8" pin="2"/>
     </net>
     <net code="28" name="/VPWR">
-      <node ref="J2" pin="10"/>
       <node ref="R5" pin="2"/>
       <node ref="R6" pin="1"/>
+      <node ref="J2" pin="10"/>
     </net>
     <net code="29" name="Net-(J2-Pad14)">
       <node ref="J2" pin="14"/>
