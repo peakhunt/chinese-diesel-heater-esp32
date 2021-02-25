@@ -8,7 +8,7 @@
 
 #include "ssd1306.h"
 
-#include "heater.h"
+#include "app_heater.h"
 #include "version.h"
 #include "utilities.h"
 
@@ -88,6 +88,7 @@ static const char* on_off_str[] =
 static const char*  _dialog_msg = NULL;
 static bool         _dialog_sel = false;
 static display_mode_t   _prev_mode;
+static app_heater_status_rsp_t    _r;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -119,15 +120,15 @@ welcome_input(display_input_t input)
 static void
 status_dialog_confirm(void)
 {
-  const heater_t* heater = heater_get();
+	app_heater_status(&_r);
 
-  if (heater->state == heater_state_off)
+  if (_r.state == heater_state_off)
   {
-    heater_start();
+    app_heater_start();
   }
-  else if(heater->state == heater_state_running)
+  else if(_r.state == heater_state_running)
   {
-    heater_stop();
+    app_heater_stop();
   }
 
   display_switch(display_mode_status);
@@ -136,7 +137,6 @@ status_dialog_confirm(void)
 static void
 status_display(void)
 {
-  const heater_t* heater = heater_get();
   static const char* heater_state_str[] =
   {
     "off",
@@ -147,18 +147,20 @@ status_display(void)
     "cooling",
   };
 
-  ssd1306_printf(5, 3, Font_7x10, ssd1306_color_white,  "State: %s", heater_state_str[heater->state]);
-  ssd1306_printf(5, 12, Font_7x10, ssd1306_color_white, "Pump : %s %.1fHz", on_off_str[heater->oil_pump.on], heater->oil_pump.freq);
-  ssd1306_printf(5, 22, Font_7x10, ssd1306_color_white, "Glow : %s", on_off_str[heater->glow_plug.on]);
-  ssd1306_printf(5, 32, Font_7x10, ssd1306_color_white, "Fan  : %s %d%%", on_off_str[heater->fan.on], heater->fan.pwr);
-  ssd1306_printf(5, 42, Font_7x10, ssd1306_color_white, "OT   : %.1fC", heater->outlet_temp.temp);
-  ssd1306_printf(5, 52, Font_7x10, ssd1306_color_white, "Room : %.1fC", 0.0f); // FIXME
+	app_heater_status(&_r);
+
+  ssd1306_printf(5, 3, Font_7x10, ssd1306_color_white,  "State: %s", heater_state_str[_r.state]);
+  ssd1306_printf(5, 12, Font_7x10, ssd1306_color_white, "Pump : %s %.1fHz", on_off_str[_r.oil_on], _r.oil_freq);
+  ssd1306_printf(5, 22, Font_7x10, ssd1306_color_white, "Glow : %s", on_off_str[_r.glow_on]);
+  ssd1306_printf(5, 32, Font_7x10, ssd1306_color_white, "Fan  : %s %d%%", on_off_str[_r.fan_on], _r.fan_pwr);
+  ssd1306_printf(5, 42, Font_7x10, ssd1306_color_white, "OT   : %.1fC", _r.outlet_temp);
+  ssd1306_printf(5, 52, Font_7x10, ssd1306_color_white, "Room : %.1fC", _r.room_temp);
 }
 
 static void
 status_input(display_input_t input)
 {
-  const heater_t* heater = heater_get();
+	app_heater_status(&_r);
 
   switch(input)
   {
@@ -167,11 +169,11 @@ status_input(display_input_t input)
     break;
 
   case display_input_select:
-    if (heater->state == heater_state_off)
+    if (_r.state == heater_state_off)
     {
       popup_dialog("Start Heater?", status_dialog_confirm);
     }
-    else if(heater->state == heater_state_running)
+    else if(_r.state == heater_state_running)
     {
       popup_dialog("Stop Heater?", status_dialog_confirm);
     }
@@ -190,15 +192,15 @@ status_input(display_input_t input)
 static void
 glow_plug_confirm(void)
 {
-  const heater_t* heater = heater_get();
+	app_heater_status(&_r);
 
-  if(heater->glow_plug.on)
+  if(_r.glow_on)
   {
-    heater_glow_plug_off();
+    app_heater_control_glow(false);
   }
   else
   {
-    heater_glow_plug_on();
+    app_heater_control_glow(true);
   }
 
   display_switch(display_mode_glow_plug);
@@ -207,16 +209,16 @@ glow_plug_confirm(void)
 static void
 glow_plug_display(void)
 {
-  const heater_t* heater = heater_get();
+	app_heater_status(&_r);
 
   ssd1306_printf(5, 5, Font_7x10, ssd1306_color_white, "Glow Plug");
-  ssd1306_printf(5, 15, Font_7x10, ssd1306_color_white, "State: %s", on_off_str[heater->glow_plug.on]);
+  ssd1306_printf(5, 15, Font_7x10, ssd1306_color_white, "State: %s", on_off_str[_r.glow_on]);
 }
 
 static void
 glow_plug_input(display_input_t input)
 {
-  const heater_t* heater = heater_get();
+	app_heater_status(&_r);
 
   switch(input)
   {
@@ -225,7 +227,7 @@ glow_plug_input(display_input_t input)
     break;
 
   case display_input_select:
-    if (heater->glow_plug.on)
+    if(_r.glow_on)
     {
       popup_dialog("Turn Off Glow?", glow_plug_confirm);
     }
@@ -248,9 +250,9 @@ glow_plug_input(display_input_t input)
 static void
 oil_pump_confirm(void)
 {
-  const heater_t* heater = heater_get();
+	app_heater_status(&_r);
 
-  if(heater->oil_pump.on)
+  if(_r.oil_on)
   {
     heater_oil_pump_off();
   }
@@ -265,18 +267,18 @@ oil_pump_confirm(void)
 static void
 oil_pump_display(void)
 {
-  const heater_t* heater = heater_get();
+	app_heater_status(&_r);
 
   ssd1306_printf(5, 5, Font_7x10, ssd1306_color_white, "Oil Pump");
-  ssd1306_printf(5, 15, Font_7x10, ssd1306_color_white, "State: %s", on_off_str[heater->oil_pump.on]);
-  ssd1306_printf(5, 25, Font_7x10, ssd1306_color_white, "Freq : %.1fHz", heater->oil_pump.freq);
+  ssd1306_printf(5, 15, Font_7x10, ssd1306_color_white, "State: %s", on_off_str[_r.oil_on]);
+  ssd1306_printf(5, 25, Font_7x10, ssd1306_color_white, "Freq : %.1fHz", _r.oil_freq);
 }
 
 static void
 oil_pump_input(display_input_t input)
 {
-  const heater_t* heater = heater_get();
-  float freq = heater->oil_pump.freq;
+	app_heater_status(&_r);
+  float freq = _r.oil_freq;
 
   switch(input)
   {
@@ -285,7 +287,7 @@ oil_pump_input(display_input_t input)
     break;
 
   case display_input_select:
-    if (heater->oil_pump.on)
+    if(_r.oil_on)
     {
       popup_dialog("Turn Off Pump?", oil_pump_confirm);
     }
@@ -299,7 +301,7 @@ oil_pump_input(display_input_t input)
     freq += 0.1f;
     if(fcompare(freq, OIL_PUMP_MAX_FREQ) <= 0)
     {
-      heater_oil_pump_freq(freq);
+      app_heater_control_oil_pump_freq(freq);
       display_refresh();
     }
     break;
@@ -308,7 +310,7 @@ oil_pump_input(display_input_t input)
     freq -= 0.1f;
     if(fcompare(freq, OIL_PUMP_MIN_FREQ) >= 0)
     {
-      heater_oil_pump_freq(freq);
+      app_heater_control_oil_pump_freq(freq);
       display_refresh();
     }
     break;
@@ -326,15 +328,16 @@ oil_pump_input(display_input_t input)
 static void
 fan_confirm(void)
 {
-  const heater_t* heater = heater_get();
+	app_heater_status(&_r);
 
-  if(heater->fan.on)
+  if(_r.fan_on)
   {
+    app_heater_control_fan(false);
     heater_fan_off();
   }
   else
   {
-    heater_fan_on();
+    app_heater_control_fan(true);
   }
 
   display_switch(display_mode_fan);
@@ -342,18 +345,18 @@ fan_confirm(void)
 static void
 fan_display(void)
 {
-  const heater_t* heater = heater_get();
+	app_heater_status(&_r);
 
   ssd1306_printf(5, 5, Font_7x10, ssd1306_color_white, "Fan");
-  ssd1306_printf(5, 15, Font_7x10, ssd1306_color_white, "State: %s", on_off_str[heater->fan.on]);
-  ssd1306_printf(5, 25, Font_7x10, ssd1306_color_white, "Power: %d%%", heater->fan.pwr);
+  ssd1306_printf(5, 15, Font_7x10, ssd1306_color_white, "State: %s", on_off_str[_r.fan_on]);
+  ssd1306_printf(5, 25, Font_7x10, ssd1306_color_white, "Power: %d%%", _r.fan_pwr);
 }
 
 static void
 fan_input(display_input_t input)
 {
-  const heater_t* heater = heater_get();
-  uint8_t pwr = heater->fan.pwr;
+	app_heater_status(&_r);
+  uint8_t pwr = _r.fan_pwr;
 
   switch(input)
   {
@@ -362,7 +365,7 @@ fan_input(display_input_t input)
     break;
 
   case display_input_select:
-    if (heater->fan.on)
+    if(_r.fan_on)
     {
       popup_dialog("Turn Off Fan?", fan_confirm);
     }
@@ -376,7 +379,7 @@ fan_input(display_input_t input)
     if(pwr < 100)
     {
       pwr++;
-      heater_fan_power(pwr);
+      app_heater_control_fan_power(pwr);
       display_refresh();
     }
 
@@ -386,7 +389,7 @@ fan_input(display_input_t input)
     if(pwr > 0)
     {
       pwr--;
-      heater_fan_power(pwr);
+      app_heater_control_fan_power(pwr);
       display_refresh();
     }
     break;
