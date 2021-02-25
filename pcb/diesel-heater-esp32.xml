@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <export version="D">
   <design>
-    <source>E:\sandbox\kicad\diesel-heater-esp32\diesel-heater-esp32.sch</source>
-    <date>2/25/2021 4:51:34 PM</date>
-    <tool>Eeschema (5.1.9)-1</tool>
+    <source>/home/hawk/sandbox/chinese-diesel-heater-esp32/pcb/diesel-heater-esp32.sch</source>
+    <date>Thu 25 Feb 2021 07:45:32 PM KST</date>
+    <tool>Eeschema 5.1.9-73d0e3b20d~88~ubuntu18.04.1</tool>
     <sheet number="1" name="/" tstamps="/">
       <title_block>
         <title/>
@@ -228,8 +228,8 @@
       <tstamp>60378D5E</tstamp>
     </comp>
     <comp ref="C1">
-      <value>CP1</value>
-      <footprint>Capacitor_THT:CP_Radial_D7.5mm_P2.50mm</footprint>
+      <value>470uF</value>
+      <footprint>Capacitor_THT:CP_Radial_D6.3mm_P2.50mm</footprint>
       <datasheet>~</datasheet>
       <libsource lib="Device" part="CP1" description="Polarized capacitor, US symbol"/>
       <sheetpath names="/" tstamps="/"/>
@@ -364,10 +364,10 @@
   </libparts>
   <libraries>
     <library logical="Connector_Generic">
-      <uri>C:\Program Files\KiCad\share\kicad\library/Connector_Generic.lib</uri>
+      <uri>/usr/share/kicad/library/Connector_Generic.lib</uri>
     </library>
     <library logical="Device">
-      <uri>C:\Program Files\KiCad\share\kicad\library/Device.lib</uri>
+      <uri>/usr/share/kicad/library/Device.lib</uri>
     </library>
   </libraries>
   <nets>

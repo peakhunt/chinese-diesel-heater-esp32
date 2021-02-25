@@ -1,8 +1,8 @@
 (export (version D)
   (design
-    (source E:\sandbox\kicad\diesel-heater-esp32\diesel-heater-esp32.sch)
-    (date "2/25/2021 4:51:30 PM")
-    (tool "Eeschema (5.1.9)-1")
+    (source /home/hawk/sandbox/chinese-diesel-heater-esp32/pcb/diesel-heater-esp32.sch)
+    (date "Thu 25 Feb 2021 07:45:28 PM KST")
+    (tool "Eeschema 5.1.9-73d0e3b20d~88~ubuntu18.04.1")
     (sheet (number 1) (name /) (tstamps /)
       (title_block
         (title)
@@ -198,8 +198,8 @@
       (sheetpath (names /) (tstamps /))
       (tstamp 60378D5E))
     (comp (ref C1)
-      (value CP1)
-      (footprint Capacitor_THT:CP_Radial_D7.5mm_P2.50mm)
+      (value 470uF)
+      (footprint Capacitor_THT:CP_Radial_D6.3mm_P2.50mm)
       (datasheet ~)
       (libsource (lib Device) (part CP1) (description "Polarized capacitor, US symbol"))
       (sheetpath (names /) (tstamps /))
@@ -303,9 +303,9 @@
         (pin (num 2) (name ~) (type passive)))))
   (libraries
     (library (logical Connector_Generic)
-      (uri "C:\\Program Files\\KiCad\\share\\kicad\\library/Connector_Generic.lib"))
+      (uri /usr/share/kicad/library/Connector_Generic.lib))
     (library (logical Device)
-      (uri "C:\\Program Files\\KiCad\\share\\kicad\\library/Device.lib")))
+      (uri /usr/share/kicad/library/Device.lib)))
   (nets
     (net (code 1) (name /3V3)
       (node (ref J7) (pin 1))
