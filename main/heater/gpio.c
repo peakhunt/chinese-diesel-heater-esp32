@@ -21,7 +21,7 @@
 #define GPIO_PIN13          GPIO_NUM_13
 #define GPIO_PIN12          GPIO_NUM_12
 #define GPIO_PIN14          GPIO_NUM_14
-#define GPIO_PIN2           GPIO_NUM_2
+#define GPIO_PIN4           GPIO_NUM_4
 
 
 typedef struct
@@ -68,8 +68,8 @@ static gpio_input_t   _inputs[GPIO_MAX_INPUT] =
     .use_debounce = true,
   },
   {
-    .pin_name = gpio_in_pin_2,
-    .pin = GPIO_PIN2,
+    .pin_name = gpio_in_pin_4,
+    .pin = GPIO_PIN4,
     .use_debounce = true,
   },
 };
@@ -205,7 +205,7 @@ init_input_pins(void)
   io_conf.pin_bit_mask  = (1ULL << GPIO_PIN13) |
                           (1ULL << GPIO_PIN12) |
                           (1ULL << GPIO_PIN14) |
-                          (1ULL << GPIO_PIN2);
+                          (1ULL << GPIO_PIN4);
   io_conf.mode          = GPIO_MODE_INPUT;
   io_conf.pull_down_en  = 0;
   io_conf.pull_up_en    = 1;
@@ -231,7 +231,7 @@ init_input_pins(void)
   gpio_isr_handler_add(GPIO_PIN13, gpio_isr_handler, (void*) GPIO_PIN13);
   gpio_isr_handler_add(GPIO_PIN12, gpio_isr_handler, (void*) GPIO_PIN12);
   gpio_isr_handler_add(GPIO_PIN14, gpio_isr_handler, (void*) GPIO_PIN14);
-  gpio_isr_handler_add(GPIO_PIN2,  gpio_isr_handler, (void*) GPIO_PIN2);
+  gpio_isr_handler_add(GPIO_PIN4,  gpio_isr_handler, (void*) GPIO_PIN4);
 
   //
   // FIXME

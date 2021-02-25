@@ -23,14 +23,6 @@ typedef enum
   display_mode_dialog,
 } display_mode_t;
 
-typedef enum
-{
-  display_input_mode,
-  display_input_select,
-  display_input_up,
-  display_input_down,
-} display_input_t;
-
 typedef void (*display_handler)(void);
 typedef void (*input_handler)(display_input_t);
 typedef void (*dialog_confirm)(void);
@@ -503,28 +495,31 @@ display_task(void* pvParameters)
 
   while(1)
   {
-    display_event_t   evt;
+    display_input_t   evt;
 
     if(xQueueReceive(_event_q, (void*)&evt, STATUS_UPDATE_INTERVAL / portTICK_RATE_MS) == pdTRUE)
     {
-      // FIXME
-      // handle event
+      _input_handlers[_mode](evt);
     }
-
-    display_refresh();
-    (void)_input_handlers;
+    else
+    {
+      if(_mode != display_mode_dialog)
+      {
+        display_refresh();
+      }
+    }
   }
 }
 
 void
 display_init(void)
 {
-  _event_q = xQueueCreate(8, sizeof(display_event_t));
+  _event_q = xQueueCreate(8, sizeof(display_input_t));
   xTaskCreate(display_task, "display", 4096, NULL, 3, NULL);
 }
 
 void
-display_feed_event(display_event_t e)
+display_feed_event(display_input_t e)
 {
   xQueueSend(_event_q, (void*)&e, portMAX_DELAY);
 }

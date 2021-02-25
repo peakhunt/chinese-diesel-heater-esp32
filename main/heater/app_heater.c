@@ -285,6 +285,41 @@ app_heater_handle_cmd(app_heater_msg_t* m)
 }
 
 static void
+gpio_button_listener(gpio_in_pin_t pin, gpio_input_state_t state, void* arg)
+{
+  display_input_t   e;
+
+  if(state != gpio_input_state_low)
+  {
+    return;
+  }
+
+  switch(pin)
+  {
+  case gpio_in_pin_13:
+    e = display_input_mode;
+    break;
+
+  case gpio_in_pin_12:
+    e = display_input_select;
+    break;
+
+  case gpio_in_pin_14:
+    e = display_input_up;
+    break;
+
+  case gpio_in_pin_4:
+    e = display_input_down;
+    break;
+
+  default:
+    return;
+  }
+
+  display_feed_event(e);
+}
+
+static void
 app_heater_task(void* pvParameters)
 {
   ESP_LOGI(TAG, "starting heater task");
@@ -315,6 +350,11 @@ app_heater_task(void* pvParameters)
   misc_init();
 
   display_init();
+
+  gpio_listen(gpio_in_pin_13, gpio_button_listener, NULL);
+  gpio_listen(gpio_in_pin_12, gpio_button_listener, NULL);
+  gpio_listen(gpio_in_pin_14, gpio_button_listener, NULL);
+  gpio_listen(gpio_in_pin_4, gpio_button_listener, NULL);
 
   xTimerStart(_tick_tmr, 0);
 

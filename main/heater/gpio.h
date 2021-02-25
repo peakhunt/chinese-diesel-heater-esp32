@@ -20,10 +20,10 @@ typedef enum
   gpio_in_pin_13,   // BTN0
   gpio_in_pin_12,   // BTN1
   gpio_in_pin_14,   // BTN2
-  gpio_in_pin_2,    // BTN3
+  gpio_in_pin_4,    // BTN3
 
 } gpio_in_pin_t;
-#define GPIO_MAX_INPUT    (gpio_in_pin_2 + 1)
+#define GPIO_MAX_INPUT    (gpio_in_pin_4 + 1)
 
 typedef enum
 {
