@@ -1,0 +1,9 @@
+# install vue cli
+npm install -g @vue/cli
+
+# build web front
+cd web-front
+npm install
+npm run build
+
+#
